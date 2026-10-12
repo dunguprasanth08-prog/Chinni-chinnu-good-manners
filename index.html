@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chinnu &amp; Chinni - Good Manners Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+Telugu:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2b2d6e;--card:#fffdf5;--pink:#ff5d8f;--sun:#ffb703;--leaf:#2ec27e;--sky:#5db8ff;--bad:#ef476f;--soft:#eef6ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card:#26274f;--ink:#fff7e0;--soft:#34366b}}
+:root[data-theme="dark"]{--card:#26274f;--ink:#fff7e0;--soft:#34366b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden;background:#bfe9ff;font-family:'Baloo 2','Noto Sans Telugu',system-ui,sans-serif;color:var(--ink)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+#hud{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:6px;align-items:center;justify-content:space-between;pointer-events:none;z-index:5}
+.grp{display:flex;gap:6px;align-items:center}
+.pill{pointer-events:auto;background:var(--card);border:3px solid var(--ink);border-radius:999px;padding:2px 12px;font-weight:800;font-size:15px;line-height:1.5;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+#hud:not(.play) .gp{display:none}
+button.pill{padding:2px 12px}
+#title{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 52px);text-align:center;z-index:4;pointer-events:none;color:#fff;font-weight:800;font-size:clamp(28px,7vw,52px);line-height:1.05;text-shadow:0 3px 0 var(--ink),0 0 14px rgba(43,45,110,.6);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+#title small{display:block;margin-top:6px;font-size:.5em;color:var(--sun)}
+#panel{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:720px;max-height:52%;overflow:auto;background:var(--card);border:4px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 0 rgba(0,0,0,.12);z-index:6}
+.bub{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.av{flex:none;width:46px;height:46px;border-radius:50%;background:var(--sun);border:3px solid var(--ink);display:grid;place-items:center;font-size:26px}
+.say{flex:1;background:var(--soft);border-radius:16px;padding:8px 12px;font-weight:700;font-size:17px;line-height:1.3}
+.rp{flex:none;border:3px solid var(--ink);background:var(--sky);border-radius:14px;width:42px;height:42px;font-size:18px}
+.opt{display:flex;gap:10px;align-items:center;width:100%;text-align:left;margin:6px 0;padding:8px 12px;min-height:50px;border:3px solid var(--ink);border-radius:18px;background:var(--card);font-weight:700;font-size:17px;line-height:1.25;box-shadow:0 4px 0 var(--ink);transition:transform .08s}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.opt b{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sun);color:#2b2d6e;border:2px solid var(--ink)}
+.opt:nth-of-type(2) b{background:var(--pink);color:#fff}
+.opt:nth-of-type(3) b{background:var(--sky)}
+.opt.good{background:#c9f7de;border-color:#0b8a4f;color:#073b25}
+.opt.good b{background:var(--leaf);color:#fff}
+.opt.bad{background:#ffdbe4;border-color:var(--bad);opacity:.65;animation:shake .4s;color:#5a0f24}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.cta{display:block;width:100%;margin-top:8px;padding:10px;border:3px solid var(--ink);border-radius:18px;background:var(--pink);color:#fff;font-weight:800;font-size:20px;box-shadow:0 5px 0 var(--ink)}
+.cta:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.row{display:flex;gap:8px;margin:6px 0}
+.row>*{flex:1}
+.chip{border:3px solid var(--ink);border-radius:14px;padding:6px;background:var(--card);font-weight:800;font-size:16px}
+.chip.sel,.hero.sel{background:var(--sun);color:#2b2d6e;box-shadow:0 3px 0 var(--ink)}
+.hero{border:3px solid var(--ink);border-radius:18px;padding:8px 4px;background:var(--card);font-weight:800;font-size:18px}
+.hero span{display:block;font-size:34px;line-height:1.1}
+#nm{width:100%;border:3px solid var(--ink);border-radius:14px;padding:8px 12px;font:inherit;font-weight:700;font-size:18px;background:var(--card);color:var(--ink)}
+#banner{position:fixed;left:50%;top:24%;z-index:20;pointer-events:none;transform:translate(-50%,-50%) scale(0);font-weight:800;font-size:clamp(34px,10vw,70px);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);white-space:nowrap}
+#banner.show{animation:pop 1.4s ease-out}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(0) rotate(-8deg)}25%{transform:translate(-50%,-50%) scale(1.15) rotate(4deg)}40%{transform:translate(-50%,-50%) scale(1) rotate(0)}85%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-80%) scale(.6);opacity:0}}
+.fall{position:fixed;top:-50px;z-index:15;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(420deg)}}
+#ov{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(30,30,80,.55);padding:20px}
+#ov .card{background:var(--card);border:4px solid var(--ink);border-radius:30px;padding:22px 18px;max-width:420px;width:100%;text-align:center;box-shadow:0 8px 0 var(--ink);animation:pop2 .5s ease-out}
+@keyframes pop2{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+#ov h2{margin:0 0 6px;font-size:30px;line-height:1.1}
+#ov p{margin:6px 0 10px;font-weight:700;font-size:18px}
+#ov .big{font-size:54px;line-height:1.1}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 50px);transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:14px;padding:6px 14px;font-weight:700;font-size:14px;z-index:40;display:none;max-width:90%;text-align:center}
+@media (prefers-reduced-motion:reduce){.fall{display:none}#banner.show{animation:none;transform:translate(-50%,-50%) scale(1)}.opt.bad{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div class="grp gp"><div class="pill" id="pL"></div><div class="pill" id="pQ"></div></div>
+  <div class="grp gp"><div class="pill" id="pH"></div></div>
+  <div class="grp"><button class="pill" id="bLang"></button><button class="pill" id="bSnd" aria-label="Sound"></button></div>
+</div>
+<div id="title"></div>
+<div id="panel"></div>
+<div id="banner"></div>
+<div id="ov"></div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ================= QUESTION BANK: 5 levels x 20 questions (5 drawn at random each try) =================
+   [Situation, Right, Wrong1, Wrong2, WhyRight, WhyWrong] each "English|తెలుగు" */
+const LV=[
+/* LEVEL 1 - Home & basics */
+[
+["Grandma gives you a laddu.|అమ్మమ్మ నీకు లడ్డూ ఇచ్చింది.","Say 'Thank you, Ammamma!'|'థాంక్యూ అమ్మమ్మా!' అని చెప్పు","Grab it and run away|లాక్కుని పరిగెత్తు","Say nothing|ఏమీ మాట్లాడకు","Saying thank you shows love and respect.|థాంక్స్ చెప్తే ప్రేమ, గౌరవం చూపినట్టు.","Always thank people who give you things.|ఏదైనా ఇచ్చినవాళ్లకు ఎప్పుడూ థాంక్స్ చెప్పాలి."],
+["It is morning and you see Amma and Nanna.|ఉదయం అమ్మ, నాన్న కనిపించారు.","Say 'Good morning, Amma! Good morning, Nanna!'|'గుడ్ మార్నింగ్ అమ్మా! గుడ్ మార్నింగ్ నాన్నా!' అను","Keep watching TV|టీవీ చూస్తూ ఉండు","Ask 'What is for breakfast?' angrily|'టిఫిన్ ఏంటి?' అని కోపంగా అడుగు","A warm greeting starts the day happily.|మంచి పలకరింపుతో రోజు సంతోషంగా మొదలవుతుంది.","We greet family with a smile first.|ముందు నవ్వుతూ పలకరించాలి."],
+["You are thirsty at the dining table.|భోజనం బల్ల దగ్గర నీకు దాహం వేస్తోంది.","Say 'Amma, may I have water, please?'|'అమ్మా, దయచేసి నీళ్లు ఇస్తావా?' అని అడుగు","Shout 'Water!'|'నీళ్లు!' అని అరువు","Grab Amma's glass|అమ్మ గ్లాసు లాక్కో","'Please' makes a request polite and sweet.|'ప్లీజ్' అంటే అడగడం మర్యాదగా ఉంటుంది.","We ask politely, never shout or grab.|మర్యాదగా అడగాలి, అరవకూడదు, లాక్కోకూడదు."],
+["You feel a sneeze coming.|నీకు తుమ్ము వస్తోంది.","Cover your nose with a hanky or elbow|చేతి రుమాలు లేదా మోచేయి అడ్డుపెట్టుకో","Sneeze openly at everyone|అందరి మీద తుమ్ము","Blow it on your friend|స్నేహితుడి మీద ఊదేయి","Covering stops germs from spreading.|అడ్డు పెట్టుకుంటే క్రిములు వ్యాపించవు.","Sneezing openly spreads germs to others.|అలా తుమ్మితే క్రిములు ఇతరులకు అంటుకుంటాయి."],
+["You come home after playing in the mud. It is lunch time.|మట్టిలో ఆడి ఇంటికి వచ్చావు. భోజనం సమయం.","Wash your hands with soap first|ముందు సబ్బుతో చేతులు కడుక్కో","Eat straight away|వెంటనే తినేయి","Wipe hands on your shirt|చొక్కాకు చేతులు తుడుచుకో","Clean hands keep tummy germs away.|శుభ్రమైన చేతులు కడుపు జబ్బులు రాకుండా ఆపుతాయి.","Dirty hands carry germs into your food.|మురికి చేతులతో క్రిములు తిండిలోకి వెళ్తాయి."],
+["Your friend visits your home.|నీ స్నేహితుడు నీ ఇంటికి వచ్చాడు.","Smile, welcome and offer a seat|నవ్వుతూ ఆహ్వానించి కూర్చోమను","Hide in your room|గదిలో దాక్కో","Ignore and play alone|పట్టించుకోకుండా ఒంటరిగా ఆడుకో","A warm welcome makes guests feel special.|ఆప్యాయంగా ఆహ్వానిస్తే అతిథులకు సంతోషం.","Guests should never feel ignored.|అతిథులను నిర్లక్ష్యం చేయకూడదు."],
+["You have two toys. Your little brother has none.|నీ దగ్గర రెండు బొమ్మలు ఉన్నాయి. తమ్ముడి దగ్గర లేవు.","Share one toy with him|ఒక బొమ్మ అతనికి ఇవ్వు","Hide both toys|రెండూ దాచేయి","Say 'Mine only!'|'నావే!' అని అను","Sharing doubles the fun and the love.|పంచుకుంటే సంతోషం, ప్రేమ రెండింతలు.","Being selfish makes others sad.|స్వార్థంగా ఉంటే ఇతరులు బాధపడతారు."],
+["Nanna is on a phone call and you need something.|నాన్న ఫోన్‌లో మాట్లాడుతున్నారు, నీకు ఏదో కావాలి.","Wait quietly, then ask politely|ఓపికగా ఆగి, తర్వాత మర్యాదగా అడుగు","Shout louder than him|ఆయన కంటే గట్టిగా అరువు","Pull the phone away|ఫోన్ లాగేయి","Waiting for your turn shows patience.|మన వంతు కోసం ఆగడం ఓర్పు.","Interrupting a call is rude.|ఫోన్ మాట్లాడేటప్పుడు అడ్డుపడటం తప్పు."],
+["You spill milk on the floor.|పొరపాటున నేల మీద పాలు ఒలికాయి.","Say sorry and help clean it|సారీ చెప్పి శుభ్రం చేయడంలో సాయం చెయ్యి","Blame the cat|పిల్లి మీద నింద వెయ్యి","Run away|పారిపో","Owning a mistake is brave and honest.|తప్పు ఒప్పుకోవడం ధైర్యం, నిజాయితీ.","Blaming others is not fair or honest.|ఇతరులపై నింద వేయడం న్యాయం కాదు, నిజాయితీ కాదు."],
+["Amma says it is bedtime.|అమ్మ పడుకునే సమయం అంది.","Say 'Good night' and go to bed|'గుడ్ నైట్' చెప్పి పడుకో","Keep playing and ignore|ఆడుతూనే పట్టించుకోకు","Argue and cry|వాదించి ఏడువు","Sleeping on time keeps you healthy and fresh.|సమయానికి నిద్రపోతే ఆరోగ్యం, ఉత్సాహం.","Arguing with parents is not respectful.|పెద్దలతో వాదించడం గౌరవం కాదు."],
+["Your friend says 'Sorry' for bumping you.|నిన్ను తగిలినందుకు స్నేహితుడు 'సారీ' అన్నాడు.","Say 'It's okay' with a smile|నవ్వుతూ 'పర్వాలేదు' అను","Say bad words|తిట్టు","Turn away angrily|కోపంగా మొహం తిప్పుకో","Forgiving keeps friendships strong.|క్షమిస్తే స్నేహం గట్టిపడుతుంది.","Anger over a small mistake hurts friendships.|చిన్న తప్పుకు కోపం స్నేహాన్ని దెబ్బతీస్తుంది."],
+["You are eating lunch with the family.|కుటుంబంతో కలిసి భోజనం చేస్తున్నావు.","Chew with your mouth closed|నోరు మూసుకుని నములు","Talk with food in your mouth|నోట్లో ముద్దతో మాట్లాడు","Make loud slurping sounds|పెద్ద శబ్దంతో జుర్రు","Quiet eating is pleasant for everyone.|నిశ్శబ్దంగా తింటే అందరికీ హాయి.","Noisy, messy eating bothers others.|శబ్దంతో, చిందరవందరగా తింటే ఇతరులకు ఇబ్బంది."],
+["Grandfather walks into the room.|తాతయ్య గదిలోకి వచ్చారు.","Stand up, greet and offer your seat|లేచి నమస్తే చెప్పి సీటు ఇవ్వు","Keep playing on the phone|ఫోన్‌లో ఆడుతూనే ఉండు","Pretend to sleep|నిద్రపోయినట్టు నటించు","Respecting elders is a great Indian value.|పెద్దలను గౌరవించడం మన గొప్ప సంస్కారం.","Elders deserve our attention and respect.|పెద్దలకు మన శ్రద్ధ, గౌరవం ఇవ్వాలి."],
+["Amma serves a curry you don't like.|అమ్మ నీకు ఇష్టం లేని కూర వడ్డించింది.","Say 'Thank you, just a little please'|'థాంక్యూ, కొంచెం చాలు' అను","Say 'Yuck!' loudly|'ఛీ!' అని గట్టిగా అను","Throw it away|పారేయి","Politely taking a little respects the cook.|కొంచెం తీసుకుంటే వండినవారిని గౌరవించినట్టు.","Rude words hurt the person who cooked.|వండినవారిని బాధపెట్టే మాటలు తప్పు."],
+["You borrowed your friend's pencil.|స్నేహితుడి పెన్సిల్ తీసుకున్నావు.","Return it and say thanks|తిరిగి ఇచ్చి థాంక్స్ చెప్పు","Keep it in your bag|నీ బ్యాగ్‌లో దాచుకో","Say you never took it|తీసుకోలేదని చెప్పు","Returning things builds trust.|వస్తువులు తిరిగి ఇస్తే నమ్మకం పెరుగుతుంది.","Keeping others' things is not honest.|ఇతరుల వస్తువులు ఉంచుకోవడం నిజాయితీ కాదు."],
+["Your room is full of scattered toys.|నీ గది నిండా బొమ్మలు చెల్లాచెదురుగా ఉన్నాయి.","Put them back in the toy box|బొమ్మల పెట్టెలో సర్దు","Leave it for Amma to clean|అమ్మ సర్దుతుందని వదిలేయి","Kick them under the bed|మంచం కింద తన్నేయి","Tidying up helps the family and builds a good habit.|సర్దడం ఇంటివారికి సాయం, నీకు మంచి అలవాటు.","Everyone should clean their own mess.|ఎవరి చిందరవందర వారే సర్దుకోవాలి."],
+["A guest arrives at your house.|మీ ఇంటికి అతిథి వచ్చారు.","Greet with 'Namaste' and offer water|'నమస్తే' చెప్పి నీళ్లు ఇవ్వు","Ask 'What gift did you bring?'|'ఏం గిఫ్ట్ తెచ్చారు?' అని అడుగు","Run and hide|పరిగెత్తి దాక్కో","In India, guests are treated like God.|మన దేశంలో అతిథి దేవోభవ.","Asking for gifts is not good manners.|గిఫ్ట్ అడగడం మర్యాద కాదు."],
+["You want to play outside.|బయట ఆడుకోవాలని ఉంది.","Ask Amma for permission first|ముందు అమ్మను అనుమతి అడుగు","Sneak out quietly|చప్పుడు లేకుండా జారుకో","Tell a lie and go|అబద్ధం చెప్పి వెళ్లు","Asking permission keeps you safe.|అనుమతి అడిగితే నువ్వు సురక్షితంగా ఉంటావు.","Sneaking out worries your family.|చెప్పకుండా వెళ్తే ఇంట్లో భయపడతారు."],
+["Your little sister is crying.|చెల్లెలు ఏడుస్తోంది.","Comfort her and call Amma|ఓదార్చి అమ్మను పిలువు","Laugh at her|ఆమెను చూసి నవ్వు","Ignore and keep playing|పట్టించుకోకుండా ఆడుకో","Caring for siblings is kindness.|తోబుట్టువును చూసుకోవడం దయ.","Laughing at someone's tears is unkind.|ఏడ్చేవారిని చూసి నవ్వడం దయలేనితనం."],
+["Water runs while you brush your teeth.|పళ్లు తోముకుంటున్నప్పుడు నీళ్లు వస్తూనే ఉన్నాయి.","Close the tap until you need it|అవసరం అయ్యే వరకు కొళాయి కట్టేయి","Leave it running|అలాగే వదిలేయి","Splash water for fun|సరదాగా నీళ్లు చల్లు","Saving water is good for our earth.|నీళ్లు ఆదా చేస్తే భూమికి మంచిది.","Wasting water hurts people who need it.|నీళ్లు వృథా చేస్తే అవసరమైనవారికి నష్టం."]
+],
+/* LEVEL 2 - School & friends */
+[
+["Teacher enters the classroom.|టీచర్ క్లాసులోకి వచ్చారు.","Stand and say 'Good morning, Madam'|లేచి 'గుడ్ మార్నింగ్ మేడమ్' అను","Keep chatting|మాట్లాడుతూనే ఉండు","Throw a paper ball|కాగితం బంతి విసురు","Greeting the teacher shows respect.|టీచర్‌ను పలకరిస్తే గౌరవం చూపినట్టు.","Teachers deserve respect when they enter.|టీచర్ రాగానే గౌరవం చూపాలి."],
+["You have a doubt during the lesson.|పాఠం మధ్యలో నీకు సందేహం వచ్చింది.","Raise your hand and ask|చెయ్యి ఎత్తి అడుగు","Shout the question|గట్టిగా అరిచి అడుగు","Stay quiet and stay confused|మౌనంగా ఉండి అయోమయంలో ఉండు","Asking politely helps you learn.|మర్యాదగా అడిగితే నేర్చుకుంటావు.","Shouting disturbs the class, and silence won't clear doubts.|అరిస్తే క్లాస్‌కి ఇబ్బంది, మౌనంగా ఉంటే సందేహం తీరదు."],
+["A new student sits alone.|కొత్త విద్యార్థి ఒంటరిగా కూర్చున్నాడు.","Smile and invite him to play|నవ్వుతూ ఆడుకోవడానికి పిలువు","Laugh at his clothes|అతని బట్టలను చూసి నవ్వు","Don't talk to him|అతనితో మాట్లాడకు","Kindness helps new friends feel at home.|దయ చూపితే కొత్తవారికి ఇంట్లో ఉన్నట్టు ఉంటుంది.","Everyone feels shy when new, so be friendly.|కొత్తలో అందరికీ బెరుకే, స్నేహంగా ఉండాలి."],
+["Your friend's tiffin has an unfamiliar smell.|స్నేహితుడి టిఫిన్ వాసన నీకు కొత్తగా ఉంది.","Ask 'What is it? Looks interesting!'|'ఇదేంటి? బాగుంది!' అని అడుగు","Say 'Eww, smelly!'|'ఛీ, వాసన!' అను","Hold your nose and laugh|ముక్కు మూసుకుని నవ్వు","Every family's food is special.|ప్రతి ఇంటి వంట ప్రత్యేకమే.","Making fun of food can hurt feelings.|ఆహారాన్ని ఎగతాళి చేస్తే మనసు నొచ్చుకుంటుంది."],
+["You reach class late.|క్లాసుకు ఆలస్యంగా వచ్చావు.","Say sorry and ask 'May I come in?'|సారీ చెప్పి 'లోపలికి రావచ్చా?' అని అడుగు","Sneak in quietly|చప్పుడు లేకుండా దూరిపో","Walk in loudly|గట్టిగా శబ్దం చేస్తూ రా","Asking permission shows respect.|అనుమతి అడిగితే గౌరవం చూపినట్టు.","Sneaking or noise disturbs the lesson.|దూరిపోవడం, శబ్దం పాఠాన్ని చెడగొడతాయి."],
+["Kids queue at the water tap.|నీళ్ల కొళాయి దగ్గర పిల్లలు వరుసలో ఉన్నారు.","Wait for your turn in line|వరుసలో నీ వంతు కోసం ఆగు","Push to the front|ముందుకు తోసుకుపో","Send a friend to cut the line|స్నేహితుడితో లైన్‌లో దూరించు","Queues keep things fair for all.|వరుస పాటిస్తే అందరికీ న్యాయం.","Pushing or cutting is unfair.|తోసుకోవడం, దూరడం అన్యాయం."],
+["Your friend got low marks and feels sad.|స్నేహితుడికి తక్కువ మార్కులు వచ్చి బాధగా ఉన్నాడు.","Encourage him: 'Let's study together'|'కలిసి చదువుదాం' అని ప్రోత్సహించు","Laugh and call him dull|నవ్వి 'మందబుద్ధి' అను","Tell everyone his marks|అందరికీ అతని మార్కులు చెప్పు","Encouragement gives friends courage.|ప్రోత్సాహం స్నేహితులకు ధైర్యం ఇస్తుంది.","Teasing makes someone feel worse.|ఎగతాళి చేస్తే ఇంకా బాధ పెరుగుతుంది."],
+["You find a pen that isn't yours.|నీది కాని పెన్ను దొరికింది.","Give it to the teacher|టీచర్‌కు ఇవ్వు","Keep it|నువ్వే ఉంచుకో","Throw it away|పారేయి","The owner can get it back. That is honesty.|యజమానికి తిరిగి దొరుకుతుంది. అదే నిజాయితీ.","Things belong to their owners.|వస్తువులు వాటి యజమానులవి."],
+["Your friend forgot his lunch.|స్నేహితుడు భోజనం తేవడం మర్చిపోయాడు.","Share some of your lunch|నీ భోజనంలో కొంత పంచు","Eat quickly before he sees|అతను చూసేలోపు తినేయి","Tease him for forgetting|మర్చిపోయినందుకు ఆటపట్టించు","Sharing food shows a big heart.|భోజనం పంచడం పెద్ద మనసు.","A good friend helps in need.|మంచి స్నేహితుడు అవసరంలో సాయం చేస్తాడు."],
+["A classmate is answering a question.|ఒక క్లాస్‌మేట్ సమాధానం చెబుతున్నాడు.","Listen till he finishes|అతను పూర్తి చేసే వరకు విను","Interrupt with your answer|మధ్యలో నీ సమాధానం చెప్పు","Talk to your friend|స్నేహితుడితో మాట్లాడు","Listening is a way of respecting.|వినడం కూడా గౌరవమే.","Interrupting is rude.|మధ్యలో అడ్డుపడటం మర్యాద కాదు."],
+["You accidentally break a classroom window.|పొరపాటున క్లాస్ కిటికీ పగలగొట్టావు.","Tell the teacher the truth|టీచర్‌కు నిజం చెప్పు","Hide and say nothing|దాచి ఏమీ చెప్పకు","Blame another child|వేరే పిల్లవాడిని నిందించు","Truth makes you trusted, even after a mistake.|నిజం చెబితే తప్పు చేసినా నమ్మకం ఉంటుంది.","Hiding or blaming hurts others.|దాచడం, నింద వేయడం ఇతరులను బాధపెడతాయి."],
+["You are in a group project.|గ్రూప్ ప్రాజెక్ట్‌లో ఉన్నావు.","Let everyone share ideas and work|అందరూ ఆలోచనలు చెప్పి పని చేయనివ్వు","Boss everyone around|అందరినీ ఆజ్ఞాపించు","Sit and let others work|కూర్చుని ఇతరులను చేయనివ్వు","Teamwork needs everyone's ideas.|టీమ్‌వర్క్‌కు అందరి ఆలోచనలు కావాలి.","A team works best when all help fairly.|అందరూ సమానంగా సాయం చేస్తేనే టీమ్ గెలుస్తుంది."],
+["A classmate speaks with a different accent.|ఒక క్లాస్‌మేట్ వేరే యాసలో మాట్లాడుతున్నాడు.","Listen kindly and learn from him|దయతో విని అతని నుంచి నేర్చుకో","Copy and mock him|అనుకరించి ఎగతాళి చెయ్యి","Laugh with others|అందరితో కలిసి నవ్వు","India has many languages and all are beautiful.|భారతదేశంలో ఎన్నో భాషలు, అన్నీ అందమైనవే.","Mocking how someone speaks is hurtful.|ఎవరి మాట తీరునైనా ఎగతాళి చేయడం బాధ కలిగిస్తుంది."],
+["A friend asks to copy your test answers.|స్నేహితుడు పరీక్షలో కాపీ కొట్టనివ్వమని అడిగాడు.","Say no kindly and offer to help him study|మర్యాదగా వద్దని చెప్పి చదువుకు సాయం చేస్తానను","Let him copy|కాపీ కొట్టనివ్వు","Give him wrong answers|తప్పు సమాధానాలు చూపించు","Real help is teaching, not cheating.|నిజమైన సాయం నేర్పడం, కాపీ కాదు.","Cheating and tricks are both dishonest.|కాపీ, మోసం రెండూ నిజాయితీ కాదు."],
+["Your ball hits a classmate while playing.|ఆడుతుండగా నీ బంతి ఒక క్లాస్‌మేట్‌కు తగిలింది.","Say sorry and check if he is okay|సారీ చెప్పి అతనికి బాగుందా అని చూడు","Laugh and run|నవ్వి పారిపో","Say it was his fault|అతని తప్పే అను","Caring when someone is hurt is kind.|ఎవరైనా దెబ్బ తగిలితే పట్టించుకోవడం దయ.","Running away leaves the hurt child alone.|పారిపోతే గాయపడిన పిల్లవాడు ఒంటరి అవుతాడు."],
+["Cleaner aunty is sweeping the corridor.|ఆయమ్మ కారిడార్ ఊడుస్తోంది.","Say thank you and keep the floor clean|థాంక్స్ చెప్పి నేల శుభ్రంగా ఉంచు","Throw wrappers on the floor|చాక్లెట్ కవర్లు నేల మీద వెయ్యి","Make fun of her|ఆమెను ఎగతాళి చెయ్యి","Every job deserves respect.|ప్రతి పనికి గౌరవం ఇవ్వాలి.","Littering makes her work harder.|చెత్త వేస్తే ఆమె పని కష్టమవుతుంది."],
+["Teacher scolds you for a mistake.|తప్పు చేసినందుకు టీచర్ మందలించారు.","Listen, say sorry and improve|విని, సారీ చెప్పి సరిదిద్దుకో","Argue back loudly|ఎదురు మాట్లాడు","Sulk and refuse to study|ముభావంగా ఉండి చదవను అను","Learning from mistakes makes you better.|తప్పుల నుంచి నేర్చుకుంటే మెరుగవుతావు.","Talking back shows disrespect.|ఎదురు మాట్లాడటం అగౌరవం."],
+["Your team loses the match.|నీ టీమ్ మ్యాచ్ ఓడిపోయింది.","Congratulate the winners|గెలిచినవారిని అభినందించు","Say they cheated|వాళ్లు మోసం చేశారని అను","Throw the bat down|బ్యాట్ విసిరేయి","Good sportsmanship matters more than winning.|గెలుపు కంటే క్రీడాస్ఫూర్తి ముఖ్యం.","Blaming others is poor sportsmanship.|ఇతరులను నిందించడం క్రీడాస్ఫూర్తి కాదు."],
+["You are in the school library.|నువ్వు స్కూల్ లైబ్రరీలో ఉన్నావు.","Speak softly and handle books gently|మెల్లగా మాట్లాడు, పుస్తకాలను జాగ్రత్తగా పట్టుకో","Chat loudly|గట్టిగా కబుర్లు చెప్పు","Tear pages for a game|ఆట కోసం పేజీలు చింపు","Libraries need silence so everyone can read.|అందరూ చదవడానికి లైబ్రరీలో నిశ్శబ్దం కావాలి.","Books are shared treasures, so keep them safe.|పుస్తకాలు అందరి సంపద, జాగ్రత్తగా చూసుకో."],
+["A little child boards the school bus.|స్కూల్ బస్సులో ఒక చిన్న పిల్లవాడు ఎక్కాడు.","Help him find a seat|అతనికి సీటు దొరకడంలో సాయం చెయ్యి","Spread your bag on the empty seat|ఖాళీ సీటులో బ్యాగ్ పెట్టేయి","Push him to the back|వెనక్కి తోసేయి","Helping the small ones is a big-hearted thing.|చిన్నవారికి సాయం చేయడం గొప్ప మనసు.","Seats are for everyone who needs them.|అవసరమైన అందరికీ సీటు దక్కాలి."]
+],
+/* LEVEL 3 - Public places & market */
+[
+["You finish a packet of chips on the road.|రోడ్డు మీద చిప్స్ ప్యాకెట్ తినడం అయిపోయింది.","Put the wrapper in a dustbin|కవర్‌ను చెత్తబుట్టలో వెయ్యి","Drop it on the road|రోడ్డు మీద పడేయి","Hide it in a drain|కాలువలో వేసేయి","A clean India begins with you.|స్వచ్ఛ భారత్ నీతోనే మొదలు.","Litter blocks drains and harms animals.|చెత్త కాలువలను మూసేసి జంతువులకు హాని చేస్తుంది."],
+["An elderly lady stands in a crowded bus.|రద్దీ బస్సులో ఒక వృద్ధురాలు నిలబడి ఉంది.","Offer your seat to her|నీ సీటు ఆమెకు ఇవ్వు","Pretend to sleep|నిద్రపోయినట్టు నటించు","Look out of the window|కిటికీ బయటకు చూడు","Giving your seat is respect and kindness.|సీటు ఇవ్వడం గౌరవం, దయ.","Elders find standing very tiring.|పెద్దవారికి నిలబడటం చాలా కష్టం."],
+["You want one kilo of rice at a shop.|దుకాణంలో కిలో బియ్యం కావాలి.","Say 'Uncle, one kilo rice, please'|'అంకుల్, కిలో బియ్యం ఇవ్వండి, ప్లీజ్' అను","Snatch the packet|ప్యాకెట్ లాక్కో","Shout 'Hey you, rice!'|'ఏయ్, బియ్యం!' అని అరువు","Polite words make a happy shopkeeper.|మర్యాదగా అడిగితే దుకాణదారు సంతోషిస్తాడు.","Everyone deserves polite speech.|ప్రతి ఒక్కరికీ మర్యాదగా మాట్లాడాలి."],
+["You think the price is too high.|ధర ఎక్కువ అనిపించింది.","Ask 'Can you reduce a little, please?'|'కొంచెం తగ్గిస్తారా, ప్లీజ్?' అని అడుగు","Call him a cheat|మోసగాడు అను","Throw the item down|వస్తువు విసిరేయి","Asking nicely is fair and friendly.|మర్యాదగా అడగడం న్యాయం, స్నేహపూర్వకం.","Insulting a seller is wrong.|అమ్మేవాడిని అవమానించడం తప్పు."],
+["There is a long queue at the temple.|గుడి దగ్గర పెద్ద లైన్ ఉంది.","Join at the end and wait|చివరన నిలబడి ఓపికగా ఉండు","Push to the front|ముందుకు తోసుకుపో","Ask Dad to cut the queue|లైన్ కట్ చేయమని నాన్నను అడుగు","Waiting patiently is fair to all devotees.|ఓపికగా ఆగడం భక్తులందరికీ న్యాయం.","Cutting the line is unfair.|లైన్ కట్ చేయడం అన్యాయం."],
+["You need to cross a busy road.|రద్దీ రోడ్డు దాటాలి.","Use the zebra crossing and look both ways|జీబ్రా క్రాసింగ్ వాడి రెండు వైపులా చూడు","Run across|పరిగెత్తి దాటు","Cross while looking at your phone|ఫోన్ చూస్తూ దాటు","Looking carefully keeps you safe.|జాగ్రత్తగా చూస్తే సురక్షితం.","Rushing or phone distraction causes accidents.|తొందర, ఫోన్ ధ్యాస ప్రమాదాలకు కారణం."],
+["An old man asks you the way to the hospital.|ఒక వృద్ధుడు ఆసుపత్రికి దారి అడిగాడు.","Tell him politely, or call an adult|మర్యాదగా చెప్పు లేదా పెద్దవారిని పిలువు","Ignore him|పట్టించుకోకు","Show the wrong way as a joke|సరదాకి తప్పు దారి చూపు","Helping others is true goodness.|ఇతరులకు సాయం చేయడమే నిజమైన మంచితనం.","Wrong directions can cause real trouble.|తప్పు దారి చూపితే నిజంగా ఇబ్బంది."],
+["The auto driver drops you safely.|ఆటో డ్రైవర్ నిన్ను సురక్షితంగా దించాడు.","Pay properly and say 'Thank you, Anna'|సరిగ్గా డబ్బులిచ్చి 'థాంక్యూ అన్నా' అను","Run without paying|డబ్బులివ్వకుండా పరిగెత్తు","Argue about the fare rudely|ఛార్జీ గురించి దురుసుగా వాదించు","Thanks and fair payment respect his hard work.|థాంక్స్, సరైన డబ్బు అతని కష్టానికి గౌరవం.","Not paying is cheating.|డబ్బులివ్వకపోవడం మోసం."],
+["You are watching a film in a theatre.|థియేటర్‌లో సినిమా చూస్తున్నావు.","Keep your phone silent and be quiet|ఫోన్ సైలెంట్ పెట్టి నిశ్శబ్దంగా ఉండు","Play videos loudly|వీడియోలు గట్టిగా పెట్టు","Talk loudly to friends|స్నేహితులతో గట్టిగా మాట్లాడు","Quiet lets everyone enjoy the movie.|నిశ్శబ్దం వల్ల అందరూ సినిమా ఆనందిస్తారు.","Noise spoils the show for others.|శబ్దం ఇతరుల ఆనందాన్ని పాడు చేస్తుంది."],
+["A hungry stray dog is near you.|ఆకలితో ఉన్న వీధి కుక్క నీ దగ్గర ఉంది.","Be gentle and ask an adult to give food or water|మెల్లగా ఉండు, పెద్దవారితో ఆహారం, నీళ్లు పెట్టించు","Throw stones|రాళ్లు విసురు","Tease and chase it|ఆటపట్టించి తరుము","Kindness to animals is kindness to the world.|జంతువులపై దయ చూపడం ప్రపంచంపై దయ.","Hurting animals is cruel.|జంతువులను బాధపెట్టడం క్రూరత్వం."],
+["A stranger offers you chocolate.|ఒక తెలియని వ్యక్తి చాక్లెట్ ఇస్తానన్నాడు.","Say 'No, thank you' and tell your parents|'వద్దు, థాంక్స్' అని చెప్పి అమ్మానాన్నలకు చెప్పు","Take it and go along with him|తీసుకుని అతనితో వెళ్లు","Take it and eat it|తీసుకుని తినేయి","Staying safe from strangers is smart.|తెలియనివారి నుంచి జాగ్రత్తగా ఉండటం తెలివి.","Never accept things from strangers.|తెలియనివారి నుంచి ఏమీ తీసుకోకూడదు."],
+["You travel by train.|రైలులో ప్రయాణిస్తున్నావు.","Keep feet down and sit properly|కాళ్లు కిందకి పెట్టి సరిగ్గా కూర్చో","Put feet on the seat|సీటుపై కాళ్లు పెట్టు","Lie across several seats|చాలా సీట్లలో పడుకో","Shared seats must stay clean and free.|అందరి సీట్లు శుభ్రంగా, ఖాళీగా ఉండాలి.","Others need the seat too.|ఇతరులకూ సీటు కావాలి."],
+["You see beautiful flowers in a park.|పార్కులో అందమైన పూలు కనిపించాయి.","Enjoy them without plucking|కోయకుండా చూసి ఆనందించు","Pluck all of them|అన్నీ కోసేయి","Trample the plants|మొక్కలను తొక్కేయి","Flowers are for everybody to enjoy.|పూలు అందరూ ఆనందించడానికే.","Plucking leaves the park empty.|కోసేస్తే పార్కు వెలవెలబోతుంది."],
+["The shopkeeper gives you extra change by mistake.|దుకాణదారు పొరపాటున ఎక్కువ చిల్లర ఇచ్చాడు.","Return the extra money|ఎక్కువ డబ్బు తిరిగి ఇచ్చేయి","Keep quiet and go|మౌనంగా వెళ్లిపో","Spend it on sweets|స్వీట్లకు ఖర్చు పెట్టు","Honesty is worth more than money.|డబ్బు కంటే నిజాయితీ విలువైనది.","Keeping extra money is taking what is not yours.|ఎక్కువ డబ్బు ఉంచుకోవడం మనది కానిది తీసుకోవడం."],
+["You are buying vegetables.|కూరగాయలు కొంటున్నావు.","Pick gently and ask 'Are these fresh, Aunty?'|మెల్లగా ఎంచుకుని 'ఇవి తాజావేనా ఆంటీ?' అని అడుగు","Squeeze and throw them back|నొక్కి తిరిగి విసురు","Eat one without paying|డబ్బులివ్వకుండా ఒకటి తినేయి","Gentle handling respects the seller's goods.|జాగ్రత్తగా పట్టుకుంటే అమ్మేవారి వస్తువులను గౌరవించినట్టు.","Damaging goods causes loss to the seller.|వస్తువులు పాడు చేస్తే అమ్మేవారికి నష్టం."],
+["You feel like spitting on the road.|రోడ్డు మీద ఉమ్మివేయాలని అనిపించింది.","Wait and use a tissue or a washroom|ఆగి టిష్యూ లేదా వాష్‌రూమ్ వాడు","Spit anywhere|ఎక్కడైనా ఉమ్మేయి","Spit near people|ఇతరుల దగ్గర ఉమ్మేయి","Public places should stay clean and healthy.|బహిరంగ ప్రదేశాలు శుభ్రంగా, ఆరోగ్యంగా ఉండాలి.","Spitting spreads diseases.|ఉమ్మడం వల్ల వ్యాధులు వ్యాపిస్తాయి."],
+["A poor child asks for food at the signal.|సిగ్నల్ దగ్గర ఒక పేద పిల్లవాడు ఆహారం అడిగాడు.","Be kind and give food with an elder's help|దయగా చూసి పెద్దవారి సాయంతో ఆహారం ఇవ్వు","Shoo him away rudely|దురుసుగా తరిమేయి","Laugh at him|ఎగతాళి చెయ్యి","Compassion makes us truly human.|కరుణే మనల్ని నిజమైన మనుషులను చేస్తుంది.","Everyone deserves dignity.|ప్రతి ఒక్కరికీ గౌరవం ఉంటుంది."],
+["You want to listen to songs on a bus.|బస్సులో పాటలు వినాలని ఉంది.","Use earphones|ఇయర్‌ఫోన్స్ వాడు","Play on full speaker|గట్టిగా స్పీకర్‌లో పెట్టు","Sing loudly|గట్టిగా పాడు","Earphones let you enjoy without disturbing anyone.|ఇయర్‌ఫోన్స్‌తో ఇతరులకు ఇబ్బంది లేకుండా వినొచ్చు.","Others may not want your music right now.|ఇతరులకు ఇప్పుడు నీ సంగీతం వద్దనిపించవచ్చు."],
+["You open a mall door and someone is right behind you.|మాల్ తలుపు తెరిచావు, వెనకే ఎవరో ఉన్నారు.","Hold the door for them|తలుపు పట్టుకో","Let it slam on them|వాళ్ల మీద వదిలేయి","Rush ahead pushing|తోసుకుంటూ ముందుకు వెళ్లు","Small kind acts make days brighter.|చిన్న దయలు రోజును వెలిగిస్తాయి.","Slamming doors can hurt people.|తలుపు వదిలేస్తే దెబ్బ తగులుతుంది."],
+["You visit a hospital to meet a patient.|రోగిని చూడటానికి ఆసుపత్రికి వెళ్లావు.","Speak softly and walk quietly|మెల్లగా మాట్లాడు, నిదానంగా నడువు","Run in the corridor|కారిడార్‌లో పరిగెత్తు","Shout and laugh loudly|గట్టిగా అరుస్తూ నవ్వు","Patients need peace to heal.|రోగులకు కోలుకోవడానికి ప్రశాంతత కావాలి.","Noise disturbs sick people.|శబ్దం రోగులను ఇబ్బంది పెడుతుంది."]
+],
+/* LEVEL 4 - Festivals, guests & culture */
+[
+["You visit relatives' house for a festival.|పండుగకు బంధువుల ఇంటికి వెళ్లావు.","Greet elders with Namaste and seek blessings|పెద్దలకు నమస్తే చెప్పి ఆశీస్సులు తీసుకో","Jump on the sofa|సోఫా మీద గెంతు","Ignore everyone and use the phone|ఎవరినీ పట్టించుకోకుండా ఫోన్ చూడు","Blessings of elders bring happiness.|పెద్దల ఆశీస్సులు సంతోషాన్ని తెస్తాయి.","Visitors should show respect and good behaviour.|అతిథులు గౌరవం, మంచి ప్రవర్తన చూపాలి."],
+["It is Diwali and you have crackers.|దీపావళి, నీ దగ్గర టపాసులు ఉన్నాయి.","Light them in an open space with an elder|పెద్దవారితో కలిసి ఖాళీ స్థలంలో కాల్చు","Throw one at a friend|స్నేహితుడి మీద విసురు","Burst them near sleeping dogs|పడుకున్న కుక్కల దగ్గర కాల్చు","Safety first makes festivals joyful.|ముందు భద్రత ఉంటేనే పండుగ ఆనందం.","Crackers can injure people and scare animals.|టపాసులు మనుషులను గాయపరుస్తాయి, జంతువులను భయపెడతాయి."],
+["There are festival sweets on the plate.|పళ్లెంలో పండుగ స్వీట్లు ఉన్నాయి.","Offer elders first, then take your share|ముందు పెద్దలకు ఇచ్చి తర్వాత నువ్వు తీసుకో","Take the biggest piece first|ముందు పెద్ద ముక్క తీసుకో","Hide a few for yourself|కొన్ని నీ కోసం దాచుకో","Serving elders first and sharing is our culture.|ముందు పెద్దలకు వడ్డించడం, పంచుకోవడం మన సంప్రదాయం.","Being greedy spoils the joy of sharing.|అత్యాశ పంచుకునే సంతోషాన్ని చెడగొడుతుంది."],
+["At a wedding buffet, you see many dishes.|పెళ్లి భోజనంలో ఎన్నో వంటకాలు ఉన్నాయి.","Take only what you can finish|తినగలిగినంతే తీసుకో","Fill the plate and waste it|పళ్లెం నిండా వడ్డించుకుని వృథా చేయి","Taste and throw away|రుచి చూసి పడేయి","Wasting food hurts those who are hungry.|ఆహారం వృథా చేస్తే ఆకలితో ఉన్నవారికి అన్యాయం.","Food is precious and waste is sad.|ఆహారం విలువైనది, వృథా బాధాకరం."],
+["A wedding ritual is going on.|పెళ్లిలో ఒక తంతు జరుగుతోంది.","Sit quietly and watch with respect|నిశ్శబ్దంగా కూర్చుని గౌరవంగా చూడు","Run around screaming|అరుస్తూ పరిగెత్తు","Stand in front blocking the view|ముందు నిలబడి అందరికీ అడ్డుపడు","Respecting traditions makes the day special.|సంప్రదాయాన్ని గౌరవిస్తే ఆ రోజు ప్రత్యేకం.","Disturbing rituals shows no respect.|తంతును అడ్డుకోవడం గౌరవం కాదు."],
+["You enter a temple.|గుడిలోకి వెళ్తున్నావు.","Remove footwear and stay calm|చెప్పులు విప్పి ప్రశాంతంగా ఉండు","Wear shoes inside|చెప్పులతో లోపలికి వెళ్లు","Play and shout in the hall|హాల్లో ఆడుతూ అరువు","Temples are peaceful holy places.|గుళ్లు ప్రశాంతమైన పవిత్ర స్థలాలు.","Holy places need cleanliness and quiet.|పవిత్ర స్థలాల్లో శుభ్రత, నిశ్శబ్దం అవసరం."],
+["It is Holi and everyone plays with colours.|హోలీ రోజు అందరూ రంగులు చల్లుకుంటున్నారు.","Colour only those who want to play|ఆడాలనుకునేవారికే రంగు పూయి","Throw colour at strangers|తెలియనివారిపై రంగు చల్లు","Force colour on unwilling people|ఇష్టం లేనివారిపై బలవంతంగా రంగు చల్లు","Asking and agreeing keeps every celebration happy.|ఇష్టం ఉన్నప్పుడే వేడుక సంతోషం.","Forcing fun on others is not fun.|ఇతరులపై బలవంతం చేయడం సరదా కాదు."],
+["A guest sits in your living room.|మీ హాల్లో అతిథి కూర్చున్నారు.","Offer water and ask if they need anything|నీళ్లు ఇచ్చి ఏమైనా కావాలా అని అడుగు","Stare and giggle|తదేకంగా చూసి నవ్వు","Ask 'When will you leave?'|'ఎప్పుడు వెళ్తారు?' అని అడుగు","Caring for guests is our tradition.|అతిథులను చూసుకోవడం మన సంప్రదాయం.","Guests should feel welcome.|అతిథులకు ఆహ్వానం అనిపించాలి."],
+["You go to a neighbour's house.|పక్కింటికి వెళ్లావు.","Knock or ring the bell, then wait|తలుపు తట్టి లేదా బెల్ కొట్టి ఆగు","Barge in directly|సరాసరి లోపలికి దూసుకెళ్లు","Peek through the window|కిటికీలోంచి తొంగి చూడు","Waiting respects their privacy.|ఆగితే వారి ప్రైవసీని గౌరవించినట్టు.","Everyone's home is private space.|ప్రతి ఇల్లు వారి వ్యక్తిగత స్థలం."],
+["You are eating with your hands at a feast.|విందులో చేతితో భోజనం చేస్తున్నావు.","Wash hands and eat neatly|చేతులు కడుక్కుని చక్కగా తిను","Smear food all around|ఆహారాన్ని అంతా పూసేయి","Lick your fingers loudly|శబ్దంతో వేళ్లు నాకు","Neat eating is pleasant for all.|చక్కగా తింటే అందరికీ బాగుంటుంది.","Messy eating bothers others.|చిందరవందరగా తింటే ఇతరులకు ఇబ్బంది."],
+["A grandmother blesses you on a festival.|పండుగ రోజు ఒక బామ్మ నిన్ను ఆశీర్వదించింది.","Bow with Namaste and say thank you|నమస్తే చెప్పి వంగి థాంక్స్ చెప్పు","Laugh and skip away|నవ్వి తప్పుకో","Ask for money immediately|వెంటనే డబ్బులు అడుగు","Accepting blessings humbly is good manners.|ఆశీస్సులు వినయంగా స్వీకరించడం మర్యాద.","Blessings are not for bargaining.|ఆశీస్సులు బేరం కోసం కాదు."],
+["Your friend celebrates Eid or Christmas.|స్నేహితుడు రంజాన్ లేదా క్రిస్మస్ జరుపుకుంటున్నాడు.","Wish them happily and share the joy|సంతోషంగా శుభాకాంక్షలు చెప్పి ఆనందం పంచుకో","Mock their festival|వాళ్ల పండుగను ఎగతాళి చెయ్యి","Refuse to talk that day|ఆ రోజు మాట్లాడను అను","India celebrates all festivals together.|భారతదేశంలో అన్ని పండుగలను కలిసి జరుపుకుంటాం.","Respecting every religion makes us one family.|అన్ని మతాలను గౌరవిస్తే మనమంతా ఒక కుటుంబం."],
+["A relative calls on the phone.|బంధువు ఫోన్ చేశారు.","Say 'Namaste Uncle' and speak politely|'నమస్తే అంకుల్' అని మర్యాదగా మాట్లాడు","Say 'Who is this?' rudely|'ఎవరు నువ్వు?' అని దురుసుగా అను","Cut the call|కాల్ కట్ చేయి","Polite phone manners show good upbringing.|ఫోన్‌లో మర్యాద మంచి పెంపకాన్ని చూపుతుంది.","Rude replies hurt feelings.|దురుసు జవాబులు మనసును నొప్పిస్తాయి."],
+["You get a gift you didn't like.|నీకు నచ్చని బహుమతి వచ్చింది.","Receive it with both hands and say thanks|రెండు చేతులతో తీసుకుని థాంక్స్ చెప్పు","Say 'I don't like this!'|'ఇది నాకు నచ్చలేదు!' అను","Ask for a bigger gift|పెద్ద బహుమతి అడుగు","The thought behind a gift matters most.|బహుమతి వెనుక ఉన్న ప్రేమ ముఖ్యం.","Complaining hurts the giver.|ఫిర్యాదు చేస్తే ఇచ్చినవారు బాధపడతారు."],
+["Guests are leaving your home.|అతిథులు మీ ఇంటి నుంచి వెళ్తున్నారు.","Say goodbye at the door and thank them|గుమ్మం దగ్గర వీడ్కోలు చెప్పి థాంక్స్ చెప్పు","Close the door quickly|త్వరగా తలుపు వేసేయి","Keep playing without looking|చూడకుండా ఆడుతూ ఉండు","A warm goodbye leaves a happy memory.|మంచి వీడ్కోలు మంచి జ్ఞాపకం.","Ignoring guests feels cold.|అతిథులను పట్టించుకోకపోతే చల్లగా అనిపిస్తుంది."],
+["Aunty asks about your exam marks in front of everyone.|అందరి ముందు ఆంటీ నీ పరీక్ష మార్కులు అడిగింది.","Answer politely and honestly|మర్యాదగా, నిజాయితీగా చెప్పు","Say 'Mind your own business!'|'నీకెందుకు!' అను","Tell a big lie|పెద్ద అబద్ధం చెప్పు","Polite honesty keeps relations warm.|మర్యాదతో కూడిన నిజం బంధాలను కాపాడుతుంది.","Rudeness or lies spoil trust.|దురుసుతనం, అబద్ధాలు నమ్మకాన్ని చెడగొడతాయి."],
+["A Ganesh procession plays loud DJ near a hospital.|ఆసుపత్రి దగ్గర వినాయక ఊరేగింపులో గట్టిగా డీజే మోగుతోంది.","Keep the volume low near hospitals|ఆసుపత్రుల దగ్గర శబ్దం తగ్గించు","Turn it louder|ఇంకా గట్టిగా పెట్టు","Dance in front of the hospital door|ఆసుపత్రి గేటు ముందు డ్యాన్స్ చెయ్యి","Celebrating without troubling the sick is wise.|రోగులకు ఇబ్బంది లేకుండా జరుపుకోవడం తెలివి.","Loud sound harms patients.|పెద్ద శబ్దం రోగులకు హాని."],
+["The festival pandal is crowded.|పండుగ పందిరిలో రద్దీగా ఉంది.","Don't push, and let elders and kids go first|తోసుకోకు, పెద్దలు, పిల్లలను ముందు పంపు","Push through quickly|త్వరగా తోసుకుపో","Climb over the barricade|అడ్డుకట్ట ఎక్కి దాటు","Patience keeps crowds safe.|ఓపికతో రద్దీలో అందరూ సురక్షితం.","Pushing may cause a stampede.|తోసుకుంటే తొక్కిసలాట జరగొచ్చు."],
+["You get prasadam to share with friends.|స్నేహితులతో పంచుకోవడానికి ప్రసాదం వచ్చింది.","Share equally with everyone|అందరికీ సమానంగా పంచు","Eat it all alone|నువ్వే అంతా తినేయి","Give only to your best friend|ఒక్క బెస్ట్ ఫ్రెండ్‌కే ఇవ్వు","Sharing equally spreads joy.|సమానంగా పంచితే ఆనందం వ్యాపిస్తుంది.","Being fair makes everyone feel included.|న్యాయంగా ఉంటే అందరికీ చోటు ఉన్నట్టు అనిపిస్తుంది."],
+["The family sits for a festival dinner.|కుటుంబమంతా పండుగ భోజనానికి కూర్చున్నారు.","Wait until elders begin|పెద్దలు మొదలుపెట్టే వరకు ఆగు","Start eating before anyone|అందరికంటే ముందు తినేయి","Complain about the dishes|వంటకాల గురించి ఫిర్యాదు చెయ్యి","Waiting for elders shows respect.|పెద్దల కోసం ఆగడం గౌరవం.","Starting early or complaining is impolite.|ముందే తినడం, ఫిర్యాదు చేయడం మర్యాద కాదు."]
+],
+/* LEVEL 5 - Big-hearted choices */
+[
+["You find a wallet full of money.|డబ్బుతో నిండిన పర్సు దొరికింది.","Hand it to a trusted adult or the police|నమ్మకమైన పెద్దవారికి లేదా పోలీసులకు ఇవ్వు","Keep the money|డబ్బు నువ్వే ఉంచుకో","Buy treats with it|దానితో తినుబండారాలు కొను","Honesty even when no one watches is real character.|ఎవరూ చూడకపోయినా నిజాయితీగా ఉండటమే అసలైన గుణం.","That money belongs to someone who needs it.|ఆ డబ్బు ఎవరిదో వారికి అవసరం."],
+["Friends dare you to tease a weak classmate.|బలహీనమైన క్లాస్‌మేట్‌ను ఆటపట్టించమని స్నేహితులు రెచ్చగొడుతున్నారు.","Refuse and stand by the classmate|వద్దని చెప్పి ఆ క్లాస్‌మేట్ పక్కన నిలబడు","Join them to look cool|కూల్‌గా కనిపించడానికి కలువు","Record a video|వీడియో తీయి","Standing up for others takes real courage.|ఇతరుల కోసం నిలబడటానికి నిజమైన ధైర్యం కావాలి.","Joining or filming bullying makes it worse.|ఆటపట్టింపులో కలవడం, వీడియో తీయడం మరింత తప్పు."],
+["You lied, and your friend is being blamed.|నువ్వు అబద్ధం చెప్పావు, నిందలు స్నేహితుడిపై పడ్డాయి.","Tell the truth and say sorry|నిజం చెప్పి సారీ అడుగు","Stay silent|మౌనంగా ఉండు","Blame someone else too|ఇంకొకరిని కూడా నిందించు","Truth protects innocent friends.|నిజం అమాయక స్నేహితులను కాపాడుతుంది.","Silence lets injustice continue.|మౌనం అన్యాయాన్ని కొనసాగిస్తుంది."],
+["You feel very angry at your friend.|స్నేహితుడిపై నీకు చాలా కోపం వచ్చింది.","Breathe deeply, count to ten, then talk calmly|గట్టిగా శ్వాస తీసుకుని పది వరకు లెక్కపెట్టి ప్రశాంతంగా మాట్లాడు","Shout and hit him|అరిచి కొట్టు","Never talk to him again|ఇక అతనితో ఎప్పుడూ మాట్లాడకు","Calm words solve more than anger.|కోపం కంటే ప్రశాంతమైన మాటలు ఎక్కువ పరిష్కరిస్తాయి.","Anger can break friendships and hurt people.|కోపం స్నేహాన్ని, మనుషులను దెబ్బతీస్తుంది."],
+["A classmate walks with a limp.|ఒక క్లాస్‌మేట్ కాస్త కుంటుతూ నడుస్తున్నాడు.","Include him and be patient|అతన్ని కలుపుకుని ఓపిక చూపు","Imitate his walk|అతని నడక అనుకరించు","Avoid him|అతనికి దూరంగా ఉండు","Everyone deserves friendship and respect.|ప్రతి ఒక్కరికీ స్నేహం, గౌరవం ఇవ్వాలి.","Mocking differences is cruel.|తేడాలను ఎగతాళి చేయడం క్రూరం."],
+["A hurtful message about a classmate arrives in a group chat.|గ్రూప్ చాట్‌లో క్లాస్‌మేట్ గురించి బాధపెట్టే మెసేజ్ వచ్చింది.","Don't forward it, and tell a trusted adult|ఫార్వర్డ్ చేయకు, నమ్మకమైన పెద్దవారికి చెప్పు","Forward it to everyone|అందరికీ ఫార్వర్డ్ చెయ్యి","Reply with worse words|ఇంకా చెడు మాటలతో జవాబివ్వు","Stopping the spread protects people online.|ఆపేస్తే ఆన్‌లైన్‌లో ఇతరులు సురక్షితం.","Spreading hurt multiplies the pain.|బాధను వ్యాపింపజేస్తే నొప్పి పెరుగుతుంది."],
+["A friend tells you a private secret.|స్నేహితుడు నీకు ఒక రహస్యం చెప్పాడు.","Keep it safe unless he may be in danger|అతనికి ప్రమాదం ఉంటే తప్ప రహస్యంగా ఉంచు","Tell everyone|అందరికీ చెప్పేయి","Use it to tease him|ఆటపట్టించడానికి వాడుకో","Trust is the heart of friendship.|నమ్మకమే స్నేహానికి ప్రాణం.","Breaking trust loses friends.|నమ్మకం వమ్ము చేస్తే స్నేహం పోతుంది."],
+["Nobody is watching during an exam.|పరీక్షలో ఎవరూ చూడటం లేదు.","Write only your own answers|నీ సొంత సమాధానాలే రాయి","Peek at the notes|నోట్స్‌లో తొంగి చూడు","Look at your neighbour's paper|పక్కవాడి పేపర్ చూడు","Honest effort is true success.|నిజాయితీగా చేసిన కృషే నిజమైన విజయం.","Cheating only fools yourself.|కాపీ కొడితే నిన్ను నువ్వే మోసం చేసుకున్నట్టు."],
+["A poor classmate cannot afford a notebook.|ఒక పేద క్లాస్‌మేట్ నోట్‌బుక్ కొనలేకపోతున్నాడు.","Quietly help without embarrassing him|అతనికి సిగ్గు కలగకుండా నెమ్మదిగా సాయం చెయ్యి","Announce it to the class|క్లాసంతా చెప్పు","Laugh at him|ఎగతాళి చెయ్యి","Helping with dignity is true kindness.|గౌరవంగా సాయం చేయడమే నిజమైన దయ.","Shaming a person hurts their pride.|అవమానిస్తే ఆత్మగౌరవం దెబ్బతింటుంది."],
+["An elder says something you think is wrong.|ఒక పెద్దవారు చెప్పింది తప్పు అని నీకు అనిపించింది.","Respectfully share your view later|తర్వాత గౌరవంగా నీ అభిప్రాయం చెప్పు","Argue loudly in public|అందరి ముందు గట్టిగా వాదించు","Say 'You know nothing!'|'నీకేం తెలియదు!' అను","We can disagree and still be respectful.|భిన్నాభిప్రాయం ఉన్నా గౌరవంగా ఉండొచ్చు.","Rude arguments don't convince anyone.|దురుసు వాదనలు ఎవరినీ ఒప్పించవు."],
+["You win first prize at the school fair.|స్కూల్ ఫెయిర్‌లో నీకు మొదటి బహుమతి వచ్చింది.","Thank everyone and stay humble|అందరికీ థాంక్స్ చెప్పి వినయంగా ఉండు","Boast to everyone|అందరి ముందు గొప్పలు చెప్పుకో","Mock the others who lost|ఓడినవారిని ఎగతాళి చెయ్యి","Humility makes success shine brighter.|వినయం విజయాన్ని మరింత మెరిపిస్తుంది.","Boasting hurts others and loses friends.|గొప్పలు ఇతరులను బాధపెట్టి స్నేహాన్ని పోగొడతాయి."],
+["You see a child being bullied.|ఒక పిల్లవాడిని ఇతరులు ఏడిపించడం చూశావు.","Call a teacher or adult for help|టీచర్‌ను లేదా పెద్దవారిని పిలువు","Laugh with the bullies|ఏడిపించేవారితో కలిసి నవ్వు","Walk away pretending nothing happened|ఏమీ జరగనట్టు వెళ్లిపో","Getting help in time protects the child.|సమయానికి సాయం తెస్తే పిల్లవాడు సురక్షితం.","Ignoring bullying lets it continue.|పట్టించుకోకపోతే వేధింపు కొనసాగుతుంది."],
+["You promised to help a friend this evening, but a fun game is on.|సాయంత్రం స్నేహితుడికి సాయం చేస్తానన్నావు, కానీ సరదా ఆట ఉంది.","Keep your promise and play later|మాట నిలబెట్టుకుని ఆట తర్వాత ఆడు","Break the promise and play|మాట తప్పి ఆడు","Pretend you forgot|మర్చిపోయినట్టు నటించు","Keeping promises builds trust.|మాట నిలబెట్టుకుంటే నమ్మకం పెరుగుతుంది.","Broken promises hurt friends.|మాట తప్పితే స్నేహితులు బాధపడతారు."],
+["The house helper aunty comes to work at your home.|ఇంట్లో పనిమనిషి ఆంటీ పనికి వచ్చింది.","Greet her and treat her with respect|పలకరించి గౌరవంగా చూడు","Order her around rudely|దురుసుగా ఆజ్ఞాపించు","Ignore her|పట్టించుకోకు","Everyone who works hard deserves respect.|కష్టపడే ప్రతి ఒక్కరికీ గౌరవం ఇవ్వాలి.","Rude behaviour makes others feel small.|దురుసుగా ప్రవర్తిస్తే ఇతరులు తక్కువగా భావిస్తారు."],
+["Your group's project went wrong because of your mistake.|నీ పొరపాటు వల్ల గ్రూప్ ప్రాజెక్ట్ చెడింది.","Own up and help fix it|ఒప్పుకుని సరిచేయడంలో సాయం చెయ్యి","Blame a teammate|టీమ్‌మేట్‌పై నింద వేయి","Hide and say nothing|దాచి ఏమీ చెప్పకు","Taking responsibility shows maturity.|బాధ్యత తీసుకోవడం పరిణతి.","Blaming others is unfair.|ఇతరులను నిందించడం అన్యాయం."],
+["Your friend brings a food you've never seen.|స్నేహితుడు నువ్వు ఎప్పుడూ చూడని ఆహారం తెచ్చాడు.","Try a little, or politely say no thanks|కొంచెం రుచి చూడు లేదా మర్యాదగా వద్దని చెప్పు","Say 'That's disgusting!'|'ఇది అసహ్యం!' అను","Laugh at the dish|వంటకాన్ని చూసి నవ్వు","Respecting differences is a sign of wisdom.|భేదాలను గౌరవించడం తెలివైనవారి లక్షణం.","Hurtful words embarrass friends.|బాధపెట్టే మాటలు స్నేహితుడిని ఇబ్బంది పెడతాయి."],
+["Amma asks you to stop gaming and study.|ఆటలు ఆపి చదువుకోమని అమ్మ చెప్పింది.","Stop kindly and begin studying|మర్యాదగా ఆపి చదువు మొదలుపెట్టు","Hide the phone and play secretly|ఫోన్ దాచి రహస్యంగా ఆడు","Shout and refuse|అరిచి చదవనను","A balance of play and study keeps you healthy.|ఆట, చదువు సమతూకం ఆరోగ్యకరం.","Sneaking and shouting break trust.|దొంగతనంగా ఆడటం, అరవడం నమ్మకాన్ని చెడగొడతాయి."],
+["Someone falls on the road in front of you.|నీ ముందు రోడ్డుపై ఒకరు పడిపోయారు.","Call a nearby adult and help carefully|దగ్గర్లోని పెద్దవారిని పిలిచి జాగ్రత్తగా సాయం చెయ్యి","Just record a video|వీడియో తీయి మాత్రమే","Run away scared|భయపడి పారిపో","Quick help can save someone's day.|వెంటనే సాయం ఎవరి రోజునైనా కాపాడుతుంది.","Watching or running doesn't help the person.|చూస్తూ ఉండటం, పారిపోవడం వల్ల సాయం కాదు."],
+["Your friend wins a prize and you feel jealous.|స్నేహితుడు బహుమతి గెలిచాడు, నీకు అసూయగా ఉంది.","Be happy for him and congratulate him|అతనికోసం సంతోషించి అభినందించు","Hide his prize|అతని బహుమతి దాచేయి","Spread rumours about him|అతని గురించి పుకార్లు పుట్టించు","Sharing a friend's joy makes you grow.|స్నేహితుడి సంతోషంలో పాలుపంచుకుంటే నువ్వు ఎదుగుతావు.","Jealous actions hurt you and your friends.|అసూయ పనులు నిన్ను, స్నేహితులను బాధపెడతాయి."],
+["An elder asks you to keep a secret that makes you uneasy.|ఒక పెద్దవారు నీకు ఇబ్బంది కలిగించే రహస్యం ఉంచమన్నారు.","Tell your parents or a trusted adult|అమ్మానాన్నలకు లేదా నమ్మకమైన పెద్దవారికి చెప్పు","Keep it secret forever|ఎప్పటికీ రహస్యంగా ఉంచు","Tell only your toys|నీ బొమ్మలకు మాత్రమే చెప్పు","Happy secrets are fine, but uneasy ones must be told.|సంతోషకరమైన రహస్యాలు సరే, ఇబ్బంది కలిగించేవి తప్పక చెప్పాలి.","A secret that scares you must be shared.|భయపెట్టే రహస్యాన్ని తప్పక పంచుకోవాలి."]
+]
+];
+
+/* ================= UI TEXT ================= */
+const TXT={
+en:{title:"Chinnu &amp; Chinni<small>Good Manners Adventure</small>",level:"Level",q:"Q",name:"Type your name",hello:"Hi! Tell me your name and pick your hero!",start:"Let's Play! 🎉",next:"Next ➜",finish:"Finish Level 🏁",retry:"Try Level Again 🔁",question:"What should you do?",
+ praise:["Shabash, {n}! That's right!","Wonderful, {n}! Perfect answer!","Hurray {n}! You got it!","Super, {n}! Well done!"],
+ oops:["Oops {n}, not quite.","Hmm {n}, let's think again.","Nice try {n}, but that's not it."],
+ left:k=>k===1?"You have 1 chance left.":`You have ${k} chances left.`,
+ lose:"You used all 3 chances. Don't worry {n}, let's try this level again with new questions!",
+ retryIntro:"Fresh questions are coming, {n}. You can do it!",
+ lvlNames:["Home Sweet Home","School Time","Out and About","Festival Fun","Big Hearts"],
+ go:(n,nm,p)=>`Level ${n}: ${nm}! Let's go, ${p}!`,
+ lvlDone:"Level Complete!",lvlDoneSay:"Level complete! Shabash {n}! You are a star!",nextLvl:"Next Level ➜",
+ winT:"Manners Champion!",winSay:"Hurray {n}! You finished all 5 levels. You are a Manners Champion!",again:"Play Again 🔄",
+ hello2:(n,h)=>`Hi ${n}! I am ${h}. Let's learn good manners together!`,hn:{boy:"Chinnu",girl:"Chinni"},
+ noVoice:"Telugu voice is not installed on this device. Showing text only.",banGood:"Shabash! 🎉",banBad:"Oops! 🙈"},
+te:{title:"చిన్ను &amp; చిన్ని<small>మంచి మర్యాదల సాహసం</small>",level:"లెవెల్",q:"ప్ర",name:"నీ పేరు రాయి",hello:"హాయ్! నీ పేరు చెప్పి, నీ హీరోను ఎంచుకో!",start:"ఆడదాం! 🎉",next:"తర్వాత ➜",finish:"లెవెల్ పూర్తి 🏁",retry:"లెవెల్ మళ్లీ ఆడు 🔁",question:"నువ్వు ఏం చేస్తావు?",
+ praise:["శభాష్ {n}! సరైన సమాధానం!","చాలా బాగుంది {n}! అద్భుతం!","హుర్రే {n}! నువ్వు సాధించావు!","సూపర్ {n}! భలే చెప్పావు!"],
+ oops:["అయ్యో {n}, అది సరి కాదు.","హ్మ్ {n}, మళ్లీ ఆలోచిద్దాం.","మంచి ప్రయత్నం {n}, కానీ అది కాదు."],
+ left:k=>`ఇంకా ${k} అవకాశాలు ఉన్నాయి.`,
+ lose:"3 అవకాశాలు అయిపోయాయి. బాధపడకు {n}, కొత్త ప్రశ్నలతో ఈ లెవెల్ మళ్లీ ప్రయత్నిద్దాం!",
+ retryIntro:"కొత్త ప్రశ్నలు వస్తున్నాయి {n}. నువ్వు చేయగలవు!",
+ lvlNames:["మన ఇల్లు","బడి సమయం","బయట ప్రపంచం","పండుగ సందడి","గొప్ప మనసు"],
+ go:(n,nm,p)=>`లెవెల్ ${n}: ${nm}! పద, ${p}!`,
+ lvlDone:"లెవెల్ పూర్తయింది!",lvlDoneSay:"లెవెల్ పూర్తయింది! శభాష్ {n}! నువ్వు స్టార్ వి!",nextLvl:"తర్వాతి లెవెల్ ➜",
+ winT:"మర్యాదల ఛాంపియన్!",winSay:"హుర్రే {n}! 5 లెవెల్స్ పూర్తి చేశావు. నువ్వు మర్యాదల ఛాంపియన్ వి!",again:"మళ్లీ ఆడు 🔄",
+ hello2:(n,h)=>`హాయ్ ${n}! నేను ${h}. కలిసి మంచి మర్యాదలు నేర్చుకుందాం!`,hn:{boy:"చిన్ను",girl:"చిన్ని"},
+ noVoice:"ఈ ఫోన్‌లో తెలుగు వాయిస్ లేదు. అక్షరాలు మాత్రమే చూపిస్తున్నాం.",banGood:"శభాష్! 🎉",banBad:"అయ్యో! 🙈"}
+};
+
+/* ================= THREE.JS WORLD ================= */
+const $=id=>document.getElementById(id);
+const renderer=new THREE.WebGLRenderer({canvas:$('c'),antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+(function(){const c=document.createElement('canvas');c.width=2;c.height=256;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,256);g.addColorStop(0,'#4aa8ff');g.addColorStop(.55,'#b9e6ff');g.addColorStop(1,'#fff1cf');x.fillStyle=g;x.fillRect(0,0,2,256);scene.background=new THREE.CanvasTexture(c)})();
+scene.fog=new THREE.Fog(0xd6f0ff,32,95);
+const cam=new THREE.PerspectiveCamera(46,1,.1,220);
+scene.add(new THREE.HemisphereLight(0xffffff,0x7fae5b,.95));
+const sunL=new THREE.DirectionalLight(0xfff0c8,.95);sunL.castShadow=true;sunL.shadow.mapSize.set(1024,1024);
+Object.assign(sunL.shadow.camera,{left:-15,right:15,top:11,bottom:-8,near:1,far:60});sunL.shadow.bias=-.0006;scene.add(sunL,sunL.target);
+
+const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o||{}));
+function mesh(geo,mat,x,y,z,parent,shadow=true){const m=new THREE.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);m.castShadow=shadow;m.receiveShadow=true;(parent||scene).add(m);return m}
+const box=(w,h,d,c,x,y,z,p)=>mesh(new THREE.BoxGeometry(w,h,d),M(c),x,y,z,p);
+const cyl=(rt,rb,h,c,x,y,z,p,seg)=>mesh(new THREE.CylinderGeometry(rt,rb,h,seg||16),M(c),x,y,z,p);
+const sph=(r,c,x,y,z,p)=>mesh(new THREE.SphereGeometry(r,18,14),M(c),x,y,z,p);
+function sign(txt,x,y,z,w,h,bg,fg){const c=document.createElement('canvas');c.width=512;c.height=128;const g=c.getContext('2d');g.fillStyle=bg||'#fff';g.fillRect(0,0,512,128);g.strokeStyle='#2b2d6e';g.lineWidth=10;g.strokeRect(5,5,502,118);g.fillStyle=fg||'#2b2d6e';g.font='800 78px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,256,68);const m=new THREE.Mesh(new THREE.PlaneGeometry(w||3,h||.8),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}));m.position.set(x,y,z);scene.add(m)}
+
+const ZX=i=>i*28;
+// ground + path
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,160),M(0x7ccf5b));ground.rotation.x=-Math.PI/2;ground.position.set(60,0,-10);ground.receiveShadow=true;scene.add(ground);
+mesh(new THREE.BoxGeometry(500,.04,5.6),M(0xe3bd8c),60,.02,1.3,null,false);
+for(let i=0;i<150;i++){const x=-18+Math.random()*170,z=Math.random()<.5?-1.8-Math.random()*6:4.6+Math.random()*3;const f=mesh(new THREE.SphereGeometry(.09,6,5),M([0xff5d8f,0xffd23f,0xffffff,0xb388ff][i%4]),x,.1,z,null,false)}
+function tree(x,z,s){const t=new THREE.Group();cyl(.16,.24,1.7,0x7a4b2a,0,.85,0,t,8);[[0,2.2,0,1.05],[.6,1.8,.1,.75],[-.6,1.9,-.1,.8]].forEach(a=>sph(a[3],0x2e8b3d,a[0],a[1],a[2],t));t.position.set(x,0,z);t.scale.setScalar(s||1);scene.add(t)}
+function palm(x,z){cyl(.14,.22,4.4,0x8a5a2b,x,2.2,z,null,8);for(let k=0;k<7;k++){const a=k/7*Math.PI*2;const l=box(2.4,.06,.5,0x2f9e44,x+Math.cos(a)*1.0,4.4,z+Math.sin(a)*1.0);l.rotation.y=-a;l.rotation.z=-.35}sph(.18,0x6b4423,x+.2,4.2,z+.1);sph(.18,0x6b4423,x-.2,4.2,z-.1)}
+for(let i=0;i<17;i++)tree(-14+i*9+Math.random()*3,-12-Math.random()*3,1+Math.random()*.4);
+for(let i=0;i<8;i++)tree(-12+i*20+Math.random()*4,8.5+Math.random()*2,.9);
+
+const flames=[];
+// Zone 0 - Home
+(function(X){
+ box(7,3.4,4,0xffd166,X+.5,1.7,-6);
+ const r=mesh(new THREE.CylinderGeometry(0,5.7,1.9,4),M(0xc8472b),X+.5,4.35,-6);r.rotation.y=Math.PI/4;
+ box(1.2,2.2,.12,0x7a3b1d,X-1,1.1,-3.97);box(1.5,.2,.2,0xffffff,X-1,2.3,-3.95);
+ box(1.4,1.2,.1,0x9be3ff,X+2.3,2,-3.97);box(1.7,1.5,.08,0xffffff,X+2.3,2,-3.99);
+ sign('HOME',X+.5,3.15,-3.93,2.2,.6,'#fff3b0');
+ box(8,.3,2.2,0xd9c7a3,X+.5,.15,-3);
+ cyl(.35,.28,.5,0xc2410c,X-3.6,.25,-2.2);sph(.42,0x2d9d4a,X-3.6,.85,-2.2);
+ for(let k=0;k<9;k++)sph(.08,k%2?0xff8c00:0xffc300,X-1.7+k*.15,2.2-Math.sin(k/8*Math.PI)*.12,-3.88);
+ [[1.2,0xff4d6d],[.95,0xffd166],[.7,0xffffff],[.45,0x06d6a0],[.2,0xff4d6d]].forEach((a,i)=>mesh(new THREE.CylinderGeometry(a[0],a[0],.02,28),M(a[1]),X-4.2,.05+i*.01,3.6,null,false));
+ palm(X-8,-3);palm(X+9,-4);
+})(ZX(0));
+// Zone 1 - School
+(function(X){
+ box(13,4,4,0xf4a6b8,X+1,2,-7);box(13.4,.35,4.4,0x6c4ab6,X+1,4.2,-7);
+ for(let k=-3;k<=3;k++)if(k!==0){box(1.1,1.2,.1,0x9be3ff,X+1+k*1.7,2.6,-4.97);box(1.3,1.4,.06,0xffffff,X+1+k*1.7,2.6,-4.99)}
+ box(1.7,2.4,.12,0x5a3a1a,X+1,1.2,-4.95);sign('SCHOOL',X+1,3.55,-4.9,3.4,.8,'#ffd166');
+ cyl(.06,.06,6.2,0xcccccc,X+7.4,3.1,-3.5);box(1.3,.28,.04,0xff9933,X+8.05,5.8,-3.5);box(1.3,.28,.04,0xffffff,X+8.05,5.52,-3.5);box(1.3,.28,.04,0x138808,X+8.05,5.24,-3.5);cyl(.1,.1,.05,0x000080,X+8.05,5.52,-3.47,null,12).rotation.x=Math.PI/2;
+ box(2.2,.15,.6,0x8d5524,X-5.6,.55,-2.6);box(.12,.55,.5,0x5b3a1c,X-6.5,.27,-2.6);box(.12,.55,.5,0x5b3a1c,X-4.7,.27,-2.6);
+ tree(X-8,-5,1.1);tree(X+10,-3,1);
+ // blackboard sign
+ box(2.4,1.4,.1,0x1f4d3a,X-3,2.3,-4.95);box(2.6,1.6,.06,0x8d5524,X-3,2.3,-4.99);
+})(ZX(1));
+// Zone 2 - Market
+(function(X){
+ function stall(x,z,c1){box(3.4,1,1.6,0xa86b3c,x,.5,z);[[-1.6,-.7],[1.6,-.7],[-1.6,.7],[1.6,.7]].forEach(p=>cyl(.06,.06,3.1,0x6b4423,x+p[0],1.55,z+p[1],null,8));
+  for(let k=0;k<8;k++){const s=box(.46,.08,2.3,k%2?0xffffff:c1,x-1.6+k*.46,3.1,z);s.rotation.x=.12}
+  for(let k=0;k<12;k++)sph(.17,[0xe63946,0xf4a261,0x2a9d8f,0xffd166][k%4],x-1.3+(k%6)*.5,1.15,z-.3+Math.floor(k/6)*.55)}
+ stall(X+3,-3.4,0xe63946);stall(X-6.5,-5,0x1d9bf0);sign('MARKET',X+3,3.85,-2.55,3,.7,'#ffe08a');
+ box(.9,.6,.9,0xc08040,X+6.4,.3,-2);box(.9,.6,.9,0xb3743a,X+6.4,.9,-2);
+ cyl(.45,.38,1,0x2e9e5b,X-4.4,.5,1.5);cyl(.5,.5,.1,0x1b7a43,X-4.4,1.05,1.5);sign('BIN',X-4.4,1.6,1.5,.8,.4,'#2e9e5b','#fff');
+ tree(X+10,-6,1.1);
+})(ZX(2));
+// Zone 3 - Road
+(function(X){
+ box(34,.06,6.4,0x3a3a42,X,.03,-6.5);for(let k=0;k<11;k++)box(1.4,.07,.2,0xffffff,X-15+k*3,.07,-6.5);
+ for(let k=0;k<8;k++)box(2.6,.07,.42,0xffffff,X-1.5,.07,-9.3+k*.8);
+ const a=new THREE.Group();box(2.4,.5,1.5,0x1c1c1c,0,.6,0,a);box(2.4,.9,1.5,0xffc300,0,1.2,0,a);box(2.6,.14,1.7,0x1c1c1c,0,2.0,0,a);
+ [-1,1].forEach(s=>box(.07,.8,.07,0x1c1c1c,1.15,1.6,s*.7,a));box(.05,.9,1.3,0x9be3ff,1.2,1.5,0,a);
+ [[1.2,0],[-.8,.78],[-.8,-.78]].forEach(p=>{const w=cyl(.33,.33,.2,0x111111,p[0],.33,p[1],a,14);w.rotation.x=Math.PI/2});
+ a.position.set(X+7.6,0,-6.5);scene.add(a);
+ box(.15,3,.15,0x555555,X-9.5,1.5,-4);box(.15,3,.15,0x555555,X-6.5,1.5,-4);box(3.6,.15,1.8,0x1d9bf0,X-8,3.05,-4.2);box(2.6,.15,.6,0x8d5524,X-8,.6,-4.5);sign('BUS STOP',X-8,3.55,-3.3,2.6,.6,'#ffffff');
+ cyl(.07,.07,4.4,0x555555,X+3.5,2.2,-3.6);sph(.25,0xfff2a8,X+3.5,4.5,-3.6);
+ tree(X-12,-11,1.2);tree(X+11,-11,1.1);
+})(ZX(3));
+// Zone 4 - Festival
+(function(X){
+ box(12,.5,4,0x8b1e3f,X,.25,-6.5);box(12,4.4,.3,0xff9f1c,X,2.7,-8.6);
+ [-6,6].forEach(s=>box(.5,4.6,.5,0xffd166,X+s,2.8,-5));box(13,.3,5,0xe63946,X,5.1,-6.5);
+ sign('FESTIVAL',X,3.9,-8.4,4.2,.9,'#e63946','#ffffff');
+ for(let k=0;k<26;k++)sph(.16,k%2?0xff8c00:0xffc300,X-6.3+k*.5,4.85-Math.sin(k/25*Math.PI)*.35,-4.1);
+ for(let k=0;k<18;k++){const c=mesh(new THREE.CylinderGeometry(.28,0,.5,3),M([0xe63946,0xffd166,0x2ec27e,0x5db8ff,0xff5d8f][k%5]),X-6.8+k*.8,4.5-Math.sin(k/17*Math.PI)*.45,-3.3);c.rotation.y=.5}
+ for(let k=0;k<10;k++){cyl(.15,.1,.08,0xc2410c,X-6+k*1.3,.05,4.4);const f=mesh(new THREE.SphereGeometry(.08,8,8),new THREE.MeshBasicMaterial({color:0xffd60a}),X-6+k*1.3,.2,4.4,null,false);flames.push(f)}
+ [[1.3,0xff4d6d],[1,0xffd166],[.75,0xffffff],[.5,0x2ec27e],[.25,0xff4d6d]].forEach((a,i)=>mesh(new THREE.CylinderGeometry(a[0],a[0],.02,28),M(a[1]),X+4.6,.05+i*.01,3.6,null,false));
+ palm(X-9,-3);palm(X+9.5,-3);
+})(ZX(4));
+
+// sun + clouds
+const sunM=new THREE.Mesh(new THREE.SphereGeometry(4,20,16),new THREE.MeshBasicMaterial({color:0xfff2a8,fog:false}));scene.add(sunM);
+const clouds=[];for(let i=0;i<9;i++){const g=new THREE.Group();[[0,0,0,2.2],[2,-.3,.3,1.7],[-2,-.3,.2,1.6],[1,.7,0,1.5]].forEach(a=>{const s=new THREE.Mesh(new THREE.SphereGeometry(a[3],12,10),new THREE.MeshBasicMaterial({color:0xffffff,fog:false}));s.position.set(a[0],a[1],a[2]);g.add(s)});g.position.set(-20+i*20,20+Math.random()*6,-55-Math.random()*20);g.scale.setScalar(.8+Math.random()*.7);scene.add(g);clouds.push(g)}
+
+/* ================= CHARACTERS ================= */
+function human(o){
+ const g=new THREE.Group(),P={},sk=o.skin||0xc98a5b,hair=o.hair==null?0x15100a:o.hair,sleeve=o.shirt||(o.dress&&o.dress.c)||0x3a86ff;
+ ['L','R'].forEach((s,i)=>{const l=new THREE.Group();l.position.set(i?.13:-.13,.62,0);g.add(l);
+  cyl(.075,.065,.58,sk,0,-.3,0,l,10);
+  if(o.pants)cyl(.1,.09,.58,o.pants,0,-.3,0,l,10);else if(o.shorts)cyl(.105,.1,.3,o.shorts,0,-.17,0,l,10);
+  const sh=sph(.115,o.shoe||0x2b2b2b,0,-.6,.05,l);sh.scale.set(1,.7,1.45);P['leg'+s]=l});
+ if(o.dress){const d=o.dress;cyl(.21,d.r,d.h,d.c,0,d.y0+d.h/2,0,g,20);if(o.accent){const s=box(.1,.7,.05,o.accent,0,.95,.2,g);s.rotation.z=-.7}}
+ else cyl(.2,.23,.58,o.shirt,0,.88,0,g,14);
+ cyl(.07,.08,.1,sk,0,1.2,0,g,10);
+ const head=new THREE.Group();head.position.y=1.52;g.add(head);P.head=head;
+ const hs=sph(.34,sk,0,0,0,head);hs.scale.y=1.02;
+ if(!o.bald){const cap=mesh(new THREE.SphereGeometry(.355,20,14,0,Math.PI*2,0,Math.PI*.52),M(hair),0,0,0,head);cap.rotation.x=-.5;
+  const bh=sph(.33,hair,0,-.04,-.1,head);bh.scale.set(1,o.girl?1.25:1.02,.9);
+  if(o.girl){[-1,1].forEach(s=>{sph(.1,hair,s*.36,-.2,-.02,head).scale.y=1.7;sph(.055,o.ribbon||0xffd166,s*.35,0,-.02,head)})}}
+ if(o.bun){sph(.14,hair,0,.3,-.2,head);if(o.gajra)for(let k=0;k<6;k++){const a=k/6*Math.PI*2;sph(.04,0xffffff,Math.cos(a)*.15,.3+Math.sin(a)*.15,-.2,head)}}
+ const eyes=[];
+ [-1,1].forEach(s=>{const w=sph(.08,0xffffff,s*.125,.04,.27,head);w.scale.z=.6;const p=sph(.045,0x1a1a1a,s*.125,.035,.31,head);eyes.push(w,p);
+  const b=box(.1,.022,.02,hair===0xdddddd?0x999999:0x1a1109,s*.125,.15,.31,head);P[s<0?'browL':'browR']=b;sph(.055,0xff8fa3,s*.2,-.09,.25,head).scale.set(1,.6,.5)});
+ P.eyes=eyes;
+ const sm=mesh(new THREE.TorusGeometry(.085,.015,6,16,Math.PI),M(0x7a1f2b),0,-.07,.325,head,false);sm.rotation.z=Math.PI;P.smile=sm;
+ const op=sph(.065,0x6b0f1a,0,-.14,.31,head);op.scale.set(1.15,1,.4);op.visible=false;P.open=op;
+ if(o.glasses){[-1,1].forEach(s=>mesh(new THREE.TorusGeometry(.085,.012,6,16),M(0x222222),s*.125,.04,.32,head,false));box(.06,.012,.012,0x222222,0,.05,.33,head)}
+ if(o.mustache)box(.2,.035,.05,o.mustache,0,-.04,.335,head);
+ if(o.bindi)sph(.022,0xd90429,0,.14,.335,head);
+ [-1,1].forEach(s=>{const a=new THREE.Group();a.position.set(s*.3,1.08,0);g.add(a);
+  cyl(.07,.062,.3,o.sleeve||sleeve,0,-.15,0,a,10);cyl(.055,.05,.28,sk,0,-.42,0,a,10);sph(.062,sk,0,-.58,0,a);P[s<0?'armL':'armR']=a;
+  if(o.stick&&s>0){cyl(.03,.03,1.15,0x6b4423,.08,-.6,.1,a,6)}});
+ const sc=o.scale||1;g.scale.setScalar(sc);
+ scene.add(g);
+ return {g,P,state:'idle',until:0,ph:Math.random()*6,speaking:false,walking:false,home:{x:0,z:0,ry:0},ry:0,base:.06*sc,
+  set(s,d){this.state=s;this.until=TM+d}};
+}
+let TM=0;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function pose(a,t){
+ const P=a.P;let y=0,hx=0,hy=0,lL=0,lR=0;const R={x:0,z:.12},L={x:0,z:.12};
+ if(a.state!=='idle'&&t>a.until)a.state='idle';
+ const s=a.walking?'walk':a.state,ph=a.ph;let sad=false;
+ switch(s){
+  case 'walk':{const w=Math.sin(t*11);lL=w*.7;lR=-w*.7;R.x=w*.6;L.x=-w*.6;y=Math.abs(w)*.06;break}
+  case 'cheer':y=Math.abs(Math.sin(t*9))*.34;R.z=L.z=2.7+Math.sin(t*18)*.25;hx=-.15;break;
+  case 'clap':{y=Math.abs(Math.sin(t*8))*.1;R.x=L.x=-1.2;const c=Math.sin(t*16)*.22;R.z=L.z=-.12+c;break}
+  case 'wave':R.z=2.5+Math.sin(t*10)*.3;hy=Math.sin(t*3)*.15;break;
+  case 'namaste':R.x=L.x=-1.3;R.z=L.z=-.5;hx=.3+Math.sin(t*3)*.05;break;
+  case 'sad':sad=true;hx=.3;hy=Math.sin(t*9)*.22;R.z=L.z=.05;break;
+  case 'no':sad=true;hy=Math.sin(t*12)*.45;R.x=L.x=-.5;R.z=L.z=.6;break;
+  default:y=Math.sin(t*2+ph)*.012;R.z=L.z=.12+Math.sin(t*2+ph)*.03;hy=Math.sin(t*.7+ph)*.15;
+ }
+ P.armR.rotation.set(R.x,0,R.z);P.armL.rotation.set(L.x,0,-L.z);
+ P.legL.rotation.x=lL;P.legR.rotation.x=lR;P.head.rotation.set(hx,hy,0);
+ a.g.position.y=a.base+y*(a.g.scale.x);
+ const bl=((t+ph)%3.4)<.12;P.eyes.forEach(e=>e.scale.y=bl?.1:1);
+ if(a.speaking){P.open.visible=true;P.open.scale.y=.4+Math.abs(Math.sin(t*14))*.9;P.smile.visible=false}
+ else{P.open.visible=false;P.smile.visible=true;P.smile.rotation.z=sad?0:Math.PI;P.smile.position.y=sad?-.15:-.07}
+ P.browL.rotation.z=sad?.35:0;P.browR.rotation.z=sad?-.35:0;
+}
+const chinnu=human({skin:0xc98a5b,shirt:0x3a86ff,shorts:0x1d3557,shoe:0xffffff,scale:.9});
+const chinni=human({skin:0xd09462,girl:true,dress:{c:0xff5d8f,r:.44,h:.72,y0:.45},accent:0xffd166,bindi:true,shoe:0xffd166,ribbon:0xffd166,scale:.88});
+const NPCS=[
+ human({skin:0xb97a4b,hair:0xdddddd,bun:true,glasses:true,bindi:true,dress:{c:0x9d2b9c,r:.4,h:.98,y0:.2},accent:0xffd166,shoe:0x6b4423,scale:.98}),
+ human({skin:0xc58a5d,hair:0x120c08,bun:true,gajra:true,bindi:true,dress:{c:0x1f9e8f,r:.4,h:.98,y0:.2},accent:0xe9c46a,shoe:0x333333,scale:1.05}),
+ human({skin:0xb67a4a,hair:0x1a1109,mustache:0x1a1109,dress:{c:0xf3ead2,r:.3,h:.9,y0:.28},pants:0xffffff,shirt:0xf3ead2,shoe:0x6b4423,scale:1.08}),
+ human({skin:0xbb8556,hair:0xdddddd,mustache:0xdddddd,glasses:true,shirt:0x8d99ae,pants:0x3d405b,shoe:0x222222,stick:true,scale:1.03}),
+ human({skin:0xc58a5d,hair:0x120c08,bun:true,gajra:true,bindi:true,dress:{c:0xe63946,r:.4,h:.98,y0:.2},accent:0xffd166,shoe:0x333333,scale:1.04})
+];
+const NPC_OFF=[2.2,2.0,1.6,2.0,2.0];
+NPCS.forEach((n,i)=>{n.g.position.set(ZX(i)+NPC_OFF[i],n.base,.6);n.g.rotation.y=-.4;n.home={x:ZX(i)+NPC_OFF[i],z:.6,ry:-.4}});
+
+/* ================= STATE ================= */
+let lang='en',name='',heroType='boy',hero=chinnu,buddy=chinni,L=0,Z=0,Qn=0,chances=3,deck=[],used=[[],[],[],[],[]],cur=null,mode='intro',muted=false,pending=null;
+let sayFn=()=>TXT[lang].hello,order=[0,1,2],dis=[false,false,false],pickedK=-1,camX=0,camZ=10,camLY=-1,pi=0;
+const g_=s=>s.split('|')[lang==='te'?1:0];
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const nm=()=>name||(lang==='te'?'మిత్రమా':'friend');
+function slot(z){const X=ZX(z);return{hero:{x:X-.9,z:1.7,ry:.25},buddy:{x:X-2.8,z:1.1,ry:.5}}}
+function setRoles(instant){hero=heroType==='boy'?chinnu:chinni;buddy=heroType==='boy'?chinni:chinnu;const s=slot(Z);hero.home=s.hero;buddy.home=s.buddy;if(instant)[hero,buddy].forEach(a=>{a.g.position.x=a.home.x;a.g.position.z=a.home.z;a.g.rotation.y=a.ry=a.home.ry})}
+function moveTo(z,cb){Z=z;const s=slot(z);hero.home=s.hero;buddy.home=s.buddy;[hero,buddy].forEach(a=>a.g.position.z=a.home.z);pending=cb}
+setRoles(true);
+
+/* ================= VOICE + SOUND ================= */
+let voices=[];function loadV(){try{voices=speechSynthesis.getVoices()||[]}catch(e){}}
+if('speechSynthesis' in window){loadV();speechSynthesis.onvoiceschanged=loadV}
+function pickVoice(code,gender){const pre=code.slice(0,2).toLowerCase();let l=voices.filter(v=>v.lang.toLowerCase().replace('_','-').startsWith(pre));if(!l.length)return null;
+ l.sort((a,b)=>(b.lang.toLowerCase()===code.toLowerCase())-(a.lang.toLowerCase()===code.toLowerCase()));
+ const F=/female|woman|zira|heera|veena|lekha|shruti|swara|neerja|samantha|karen|aditi|priya|sangeeta/i,Ma=/\bmale\b|ravi|hemant|prabhat|david|mark|rishi|madhur|mohan|james|google .*(male)/i;
+ return (gender==='girl'?l.find(v=>F.test(v.name)):l.find(v=>Ma.test(v.name)&&!F.test(v.name)))||l[0]}
+let fakeT=0;
+function fakeSpeak(t){hero.speaking=true;clearTimeout(fakeT);fakeT=setTimeout(()=>hero.speaking=false,clamp(t.length*55,800,5000))}
+let toastT=0;function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>e.style.display='none',3500)}
+function speak(text){
+ if(muted||!('speechSynthesis' in window)){fakeSpeak(text);return}
+ try{speechSynthesis.cancel()}catch(e){}
+ const code=lang==='te'?'te-IN':'en-IN',v=pickVoice(code,heroType);
+ if(lang==='te'&&!v){if(!speak.warned){toast(TXT.te.noVoice);speak.warned=true}fakeSpeak(text);return}
+ const u=new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu,''));
+ u.lang=code;if(v)u.voice=v;u.pitch=heroType==='boy'?1.3:1.65;u.rate=.95;
+ const h=hero;u.onstart=()=>h.speaking=true;u.onend=u.onerror=()=>h.speaking=false;
+ try{speechSynthesis.speak(u)}catch(e){fakeSpeak(text)}
+}
+let ac;function beep(f,t0,d,type,v){if(muted)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime+t0;o.type=type||'triangle';o.frequency.value=f;g.gain.setValueAtTime(v||.16,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+d+.02)}catch(e){}}
+const sfx={good(){[523,659,784,1047].forEach((f,i)=>beep(f,i*.09,.25))},bad(){beep(200,0,.3,'sawtooth',.08);beep(150,.15,.3,'sawtooth',.08)},win(){[523,659,784,1047,1319,1568].forEach((f,i)=>beep(f,i*.1,.35))}};
+
+/* ================= CELEBRATION ================= */
+const conf=[],cmats=[0xff5d8f,0xffb703,0x2ec27e,0x5db8ff,0xb388ff,0xff7b00].map(c=>new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide})),cgeo=new THREE.PlaneGeometry(.14,.1);
+function burst(x,y,z,n){for(let i=0;i<(n||70);i++){const m=new THREE.Mesh(cgeo,cmats[i%6]);m.position.set(x,y,z);scene.add(m);conf.push({m,vx:(Math.random()-.5)*7,vy:3+Math.random()*5,vz:(Math.random()-.1)*4,rx:Math.random()*10,ry:Math.random()*10,life:2+Math.random()})}}
+function rain(n){const em=['🎉','⭐','🎊','🌟','🪔','🌼'];for(let i=0;i<(n||26);i++){const s=document.createElement('span');s.className='fall';s.textContent=em[rnd(em.length)];s.style.left=Math.random()*100+'vw';s.style.animationDuration=(1.8+Math.random()*1.6)+'s';s.style.animationDelay=Math.random()*.5+'s';s.style.fontSize=(18+Math.random()*24)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),4500)}}
+function banner(t,col){const b=$('banner');b.textContent=t;b.style.color=col;b.classList.remove('show');void b.offsetWidth;b.classList.add('show')}
+
+/* ================= GAME FLOW ================= */
+function draw(l){let pool=[];for(let i=0;i<20;i++)if(!used[l].includes(i))pool.push(i);if(pool.length<5){used[l]=[];pool=[...Array(20).keys()]}const d=shuffle(pool).slice(0,5);used[l].push(...d);return d.map(i=>LV[l][i])}
+function say(fn,sp){sayFn=fn;render();if(sp!==false)speak(fn())}
+function render(){
+ const t=TXT[lang];
+ $('pL').textContent=t.level+' '+(L+1);$('pQ').textContent=t.q+' '+Math.min(Qn+1,5)+'/5';
+ $('pH').textContent='❤️'.repeat(chances)+'🖤'.repeat(3-chances);
+ $('hud').classList.toggle('play',mode!=='intro');
+ $('bLang').textContent=lang==='en'?'తెలుగు':'English';$('bSnd').textContent=muted?'🔇':'🔊';
+ $('title').style.display=mode==='intro'?'block':'none';$('title').innerHTML=t.title;
+ const p=$('panel');
+ let h='<div class="bub"><div class="av">'+(heroType==='boy'?'👦':'👧')+'</div><div class="say" id="sy"></div><button class="rp" id="rp" aria-label="Replay">🔊</button></div>';
+ if(mode==='intro'){
+  h+='<input id="nm" maxlength="16" autocomplete="off" placeholder="'+t.name+'" value="'+name+'">';
+  h+='<div class="row"><button class="chip '+(lang==='en'?'sel':'')+'" data-l="en">English</button><button class="chip '+(lang==='te'?'sel':'')+'" data-l="te">తెలుగు</button></div>';
+  h+='<div class="row"><button class="hero '+(heroType==='boy'?'sel':'')+'" data-h="boy"><span>👦</span>'+t.hn.boy+'</button><button class="hero '+(heroType==='girl'?'sel':'')+'" data-h="girl"><span>👧</span>'+t.hn.girl+'</button></div>';
+  h+='<button class="cta" id="go">'+t.start+'</button>';
+ }else if(cur&&(mode==='ask'||mode==='right'||mode==='out')){
+  order.forEach((o,k)=>{if(mode==='right'&&k!==pickedK)return;const cls=mode==='right'?'good':(dis[k]?'bad':'');h+='<button class="opt '+cls+'" data-k="'+k+'" '+(mode!=='ask'?'disabled':'')+'><b>'+'ABC'[k]+'</b><span>'+g_(cur[o+1])+'</span></button>'});
+  if(mode==='right')h+='<button class="cta" id="nx">'+(Qn>=4?t.finish:t.next)+'</button>';
+  if(mode==='out')h+='<button class="cta" id="rt">'+t.retry+'</button>';
+ }
+ p.innerHTML=h;$('sy').textContent=sayFn();
+ $('rp').onclick=()=>speak(sayFn());
+ if(mode==='intro'){
+  $('nm').oninput=e=>{name=e.target.value.replace(/[<>&"']/g,'').trim().slice(0,16)};
+  p.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+  p.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>pickHero(b.dataset.h));
+  $('go').onclick=startGame;
+ }else{
+  p.querySelectorAll('.opt').forEach(b=>b.onclick=()=>choose(+b.dataset.k));
+  if($('nx'))$('nx').onclick=nextQ;if($('rt'))$('rt').onclick=retryLevel;
+ }
+}
+function setLang(l){lang=l;if(mode==='intro')sayFn=()=>TXT[lang].hello;render()}
+function pickHero(h){heroType=h;const old=[chinnu,chinni];setRoles(true);old.forEach(a=>a.set('idle',0));hero.set('wave',2.6);buddy.set('cheer',1.2);
+ sayFn=()=>TXT[lang].hello2(nm(),TXT[lang].hn[heroType]);render();speak(sayFn());ctxResume()}
+function ctxResume(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}}
+function startGame(){ctxResume();name=name||'';L=0;used=[[],[],[],[],[]];beginLevel(true)}
+function beginLevel(first){
+ Qn=0;chances=3;deck=draw(L);cur=null;mode='moving';
+ const t=TXT[lang],ln=t.lvlNames[L];
+ say(()=>TXT[lang].go(L+1,TXT[lang].lvlNames[L],nm()),false);
+ moveTo(L,()=>showQ(TXT[lang].go(L+1,TXT[lang].lvlNames[L],nm())));
+}
+function showQ(prefix){
+ cur=deck[Qn];order=shuffle([0,1,2]);dis=[false,false,false];pickedK=-1;chances=3;mode='ask';
+ NPCS[L].set('wave',2.4);
+ say(()=>(prefix?prefix+' ':'')+g_(cur[0])+' '+TXT[lang].question);
+}
+function react(kind){const n=NPCS[L];if(kind==='good'){hero.set('cheer',3.4);buddy.set('clap',3.4);n.set('namaste',3.4)}else{hero.set('sad',2.2);buddy.set('no',2.2);n.set('no',2.2)}}
+function choose(k){
+ if(mode!=='ask')return;ctxResume();
+ const t=TXT[lang];
+ if(order[k]===0){
+  mode='right';pickedK=k;pi=rnd(4);sfx.good();react('good');burst(hero.g.position.x,2,hero.g.position.z+1,80);rain(26);banner(t.banGood,'#ffb703');
+  say(()=>TXT[lang].praise[pi].replace('{n}',nm())+' '+g_(cur[4]));
+ }else{
+  dis[k]=true;chances--;sfx.bad();react('bad');banner(t.banBad,'#ef476f');const oi=rnd(3);
+  if(chances<=0){mode='out';say(()=>TXT[lang].oops[oi].replace('{n}',nm())+' '+g_(cur[5])+' '+TXT[lang].lose.replace('{n}',nm()))}
+  else say(()=>TXT[lang].oops[oi].replace('{n}',nm())+' '+g_(cur[5])+' '+TXT[lang].left(chances));
+ }
+}
+function retryLevel(){Qn=0;chances=3;deck=draw(L);showQ(TXT[lang].retryIntro.replace('{n}',nm()))}
+function nextQ(){Qn++;if(Qn>=5)levelDone();else showQ('')}
+function levelDone(){
+ mode='moving';sfx.win();burst(hero.g.position.x,2,hero.g.position.z+1,160);rain(46);hero.set('cheer',5);buddy.set('cheer',5);NPCS[L].set('cheer',5);
+ const t=TXT[lang],last=L===4,ov=$('ov');
+ sayFn=()=>last?TXT[lang].winSay.replace('{n}',nm()):TXT[lang].lvlDoneSay.replace('{n}',nm());speak(sayFn());render();
+ ov.innerHTML='<div class="card"><div class="big">'+(last?'🏆':'⭐⭐⭐')+'</div><h2>'+(last?t.winT:t.lvlDone)+'</h2><p>'+(last?nm()+' 🎉':nm()+' 👏')+'</p><button class="cta" id="ob">'+(last?t.again:t.nextLvl)+'</button></div>';
+ ov.style.display='flex';
+ $('ob').onclick=()=>{ov.style.display='none';try{speechSynthesis.cancel()}catch(e){}hero.speaking=false;
+  if(last){mode='intro';L=0;Qn=0;chances=3;cur=null;moveTo(0,null);sayFn=()=>TXT[lang].hello;render()}else{L++;beginLevel()}};
+}
+$('bLang').onclick=()=>setLang(lang==='en'?'te':'en');
+$('bSnd').onclick=()=>{muted=!muted;if(muted){try{speechSynthesis.cancel()}catch(e){}hero.speaking=false}render()};
+
+/* ================= LOOP ================= */
+function resize(){const w=innerWidth,h=innerHeight,por=w/h<.8;renderer.setSize(w,h,false);cam.aspect=w/h;cam.fov=por?58:44;camZ=por?10.5:9;camLY=por?-1.1:-.5;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+const clock=new THREE.Clock();
+function loop(){
+ requestAnimationFrame(loop);
+ const dt=Math.min(clock.getDelta(),.05);TM=clock.elapsedTime;
+ [chinnu,chinni].forEach(a=>{const dx=a.home.x-a.g.position.x;
+  if(Math.abs(dx)>.06){a.walking=true;a.g.position.x+=Math.sign(dx)*Math.min(Math.abs(dx),7*dt);a.ry=Math.sign(dx)*Math.PI/2}else{a.walking=false;a.g.position.x=a.home.x;a.ry=a.home.ry}
+  a.g.rotation.y+=(a.ry-a.g.rotation.y)*Math.min(1,dt*8)});
+ NPCS.forEach(n=>n.g.rotation.y+=(n.home.ry-n.g.rotation.y)*Math.min(1,dt*6));
+ [chinnu,chinni,...NPCS].forEach(a=>pose(a,TM));
+ camX+=(ZX(Z)-camX)*Math.min(1,dt*2.6);
+ if(pending&&!chinnu.walking&&!chinni.walking&&Math.abs(camX-ZX(Z))<.3){const f=pending;pending=null;f()}
+ cam.position.set(camX,2.4,camZ);cam.lookAt(camX,camLY,0);
+ sunL.position.set(camX+12,18,10);sunL.target.position.set(camX,0,0);
+ sunM.position.set(camX+35,38,-100);
+ clouds.forEach(c=>{c.position.x+=dt*.6;if(c.position.x>camX+90)c.position.x=camX-90});
+ flames.forEach((f,i)=>f.scale.setScalar(1+Math.sin(TM*10+i)*.25));
+ for(let i=conf.length-1;i>=0;i--){const c=conf[i];c.vy-=9*dt;c.m.position.x+=c.vx*dt;c.m.position.y+=c.vy*dt;c.m.position.z+=c.vz*dt;c.m.rotation.x+=c.rx*dt;c.m.rotation.y+=c.ry*dt;c.life-=dt;if(c.life<0||c.m.position.y<0){scene.remove(c.m);conf.splice(i,1)}}
+ renderer.render(scene,cam);
+}
+render();loop();
+</script>
+</body>
+</html>
